@@ -309,7 +309,8 @@ window.PW = window.PW || {};
     white:  '#dfe3ea'
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== pixel.js ==== */
 /* A low-resolution drawing surface that gets blown up to fill its container
    at a whole-number scale, so pixels stay square and crisp. */
@@ -401,7 +402,8 @@ window.PW = window.PW || {};
     requestAnimationFrame(frame);
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== font.js ==== */
 /* A 5x7 bitmap font. Uppercase only, which suits the signage look. */
 (function (PW) {
@@ -496,7 +498,8 @@ window.PW = window.PW || {};
     return PW.text(ctx, str, Math.round(cx - w / 2), y, color, scale);
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== sprites.js ==== */
 /* Parametric character art.
 
@@ -911,7 +914,8 @@ window.PW = window.PW || {};
     ctx.restore();
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== roster.js ==== */
 /* Who is in the game.
 
@@ -1022,7 +1026,8 @@ window.PW = window.PW || {};
     });
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== audio.js ==== */
 /* Four short blips and a mute toggle. Nothing is created until the first
    input, so the browser's autoplay policy stays happy. */
@@ -1085,7 +1090,8 @@ window.PW = window.PW || {};
     return api;
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== game.js ==== */
 /* Pure game state. Knows nothing about canvases or sprites — it holds cells,
    a direction, and a list of who is in the line, and it emits events that the
@@ -1279,7 +1285,8 @@ window.PW = window.PW || {};
     }
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== render.js ==== */
 /* Everything that puts pixels on the buffer: the plaza, the column, the HUD
    and the two full-screen states (shift start, shift over). */
@@ -1515,7 +1522,8 @@ window.PW = window.PW || {};
     else if (g.phase === 'docket') drawCleared(ctx, g);
   };
 })(window.PW);
-
+</script>
+<script>
 /* ==== main.js ==== */
 /* Wiring: bake the art, own the screen state, route input, run the loop. */
 (function (PW) {
@@ -1713,7 +1721,8 @@ window.PW = window.PW || {};
   say('Officer on duty. Steer to begin.');
   PW.runLoop(update, render);
 })(window.PW);
-
+</script>
+<script>
 /* Size the cabinet to a whole multiple of the 394x426 screen, so the pixel
    grid always lands on exact device pixels with no dead space in the bezel. */
 (function () {

@@ -57,9 +57,14 @@ node test/logic.test.js          # rules checks, no browser needed
 python3 -m http.server 8777      # then open the harnesses below
 ```
 
+- `tools/editor.html` is the character editor: every field as a control, all six
+  sprites live, the roster alongside for comparison, and the object to copy out.
+  Loads any existing character to edit, or a pasted one.
 - `test/sheet.html` renders every sprite at 5x for art review.
 - `test/autoplay.html` drives the real game with a bot, for watching gameplay
   states without playing.
-- `node tools/bundle.js` inlines `src/` into `tools/page.html` to produce the
-  single-file build in `dist/`. `src/` is the source of truth; `dist/` is only
-  the shippable page.
+- `node tools/bundle.js [in.html] [out.html]` inlines the `../src/*.js` script
+  tags of a page to produce a single self-contained file. Defaults to
+  `tools/page.html` -> `dist/perp-walk.html`; pass `tools/editor.html
+  dist/character-editor.html` for the editor. `src/` is the source of truth,
+  `dist/` is only build output.
