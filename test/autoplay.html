@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Perp Walk - autoplay harness</title>
+<style>body{background:#0a0d13;margin:0}#stage{width:820px;height:900px}canvas{image-rendering:pixelated}</style>
+</head><body>
+<div id="stage"></div>
+<script src="../src/palette.js"></script><script src="../src/pixel.js"></script>
+<script src="../src/font.js"></script><script src="../src/sprites.js"></script>
+<script src="../src/roster.js"></script><script src="../src/game.js"></script>
+<script src="../src/render.js"></script>
+<script>
+/* Drives the real game with a greedy-but-cautious bot, so gameplay states can
+   be inspected and screenshotted without a human at the keyboard. */
+PW.bakeAll();
+var sc = PW.createScreen(document.getElementById('stage'),
+  {width: PW.VIEW.width, height: PW.VIEW.height, background: PW.UI.void});
+var dust = PW.createDust();
+var g = PW.newGame(Number(new URLSearchParams(location.search).get('who') || 0));
+PW.begin(g);
+var ui = {screen:'game', selectIndex:0, best:0, clock:0, pop:0, fresh:false, dust:dust};
+window.__probe = function () {
+  return {phase:g.phase, score:g.score, body:g.body.length, execs:g.execs.length};
+};
+
+function blocked(x, y, len) {
+  if (x < 0 || y < 0 || x >= PW.COLS || y >= PW.ROWS) return true;
+  for (var i = 0; i < len; i += 1) if (g.body[i].x === x && g.body[i].y === y) return true;
+  return false;
+}
+// How much open space is reachable from a cell - used to avoid sealing itself in.
+function room(x, y) {
+  var seen = {}, stack = [[x, y]], n = 0;
+  while (stack.length && n < 60) {
+    var c = stack.pop(), k = c[0] + ',' + c[1];
+    if (seen[k] || blocked(c[0], c[1], g.body.length - 1)) continue;
+    seen[k] = 1; n += 1;
+    stack.push([c[0]+1,c[1]],[c[0]-1,c[1]],[c[0],c[1]+1],[c[0],c[1]-1]);
+  }
+  return n;
+}
+function think() {
+  if (g.phase !== 'playing' || !g.target) return;
+  var h = g.body[0];
+  var opts = [[1,0],[-1,0],[0,1],[0,-1]].filter(function (d) {
+    return !(d[0] === -g.dir.x && d[1] === -g.dir.y) &&
+           !blocked(h.x + d[0], h.y + d[1], g.body.length - 1);
+  });
+  if (!opts.length) return;
+  opts.sort(function (a, b) {
+    var ra = room(h.x + a[0], h.y + a[1]), rb = room(h.x + b[0], h.y + b[1]);
+    if (ra > 12 && rb > 12) {
+      var da = Math.abs(h.x + a[0] - g.target.x) + Math.abs(h.y + a[1] - g.target.y);
+      var db = Math.abs(h.x + b[0] - g.target.x) + Math.abs(h.y + b[1] - g.target.y);
+      return da - db;
+    }
+    return rb - ra;
+  });
+  PW.steer(g, opts[0][0], opts[0][1]);
+}
+
+var last = performance.now();
+(function frame(now) {
+  var dt = Math.min(0.05, (now - last) / 1000); last = now;
+  ui.clock += dt;
+  think();
+  PW.advance(g, dt);
+  for (var i = 0; i < g.events.length; i += 1) {
+    var e = g.events[i];
+    if (e.type === 'collar') {
+      ui.pop = 1;
+      dust.burst(PW.VIEW.px + e.x*PW.VIEW.cell + 12, PW.VIEW.py + e.y*PW.VIEW.cell + 12, PW.UI.accent, 1.2);
+      if (e.score > ui.best) { ui.best = e.score; ui.fresh = true; }
+    }
+    if (e.type === 'bust') {
+      dust.burst(PW.VIEW.px + e.x*PW.VIEW.cell + 12, PW.VIEW.py + e.y*PW.VIEW.cell + 12, PW.UI.danger, 1.8);
+    }
+  }
+  g.events.length = 0;
+  dust.update(dt);
+  ui.pop = Math.max(0, ui.pop - dt * 3.5);
+  PW.draw(sc.ctx, g, ui);
+  sc.present(0, 0);
+  requestAnimationFrame(frame);
+})(last);
+</script></body></html>

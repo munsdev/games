@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perp Walk</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <main id="stage" class="stage" aria-label="Perp Walk playfield"></main>
+  <footer class="bar">
+    <button id="sound" class="toggle" type="button" aria-pressed="true">
+      <span class="toggle-icon" aria-hidden="true">&#9834;</span>
+      <span id="soundText" class="toggle-text">Sound on</span>
+    </button>
+    <span class="hint">arrows / WASD steer &middot; M mute &middot; R restart &middot; C change</span>
+  </footer>
+</div>
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
+
+<script src="src/palette.js"></script>
+<script src="src/pixel.js"></script>
+<script src="src/font.js"></script>
+<script src="src/sprites.js"></script>
+<script src="src/roster.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/game.js"></script>
+<script src="src/render.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>

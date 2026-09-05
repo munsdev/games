@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{background:#151a22;margin:0;padding:10px;font:11px monospace;color:#cfd6e2}
+canvas{image-rendering:pixelated;display:block}
+</style></head><body>
+<canvas id="c" width="1180" height="760"></canvas>
+<script src="../src/palette.js"></script><script src="../src/sprites.js"></script><script src="../src/roster.js"></script>
+<script>
+var ctx=document.getElementById('c').getContext('2d');ctx.imageSmoothingEnabled=false;
+var Z=5,S=24,pad=6;
+function row(label,imgs,y){
+  ctx.fillStyle='#cfd6e2';ctx.font='11px monospace';ctx.fillText(label,6,y-4);
+  imgs.forEach(function(im,i){ctx.drawImage(im,6+i*(S*Z+pad),y,S*Z,S*Z);});
+}
+var y=16;
+PW.PLAYERS.forEach(function(d,i){
+  var a=PW.bake(d,{cuffed:false});
+  row(d.name,[a.front,a.side,a.back],y);y+=S*Z+18;
+});
+var x0=6+3*(S*Z+pad)+30;
+var yy=16;
+PW.EXECS.forEach(function(d,i){
+  var loose=PW.bake(d,{cuffed:false}).front, c=PW.bake(d,{cuffed:true});
+  ctx.fillStyle='#cfd6e2';ctx.fillText(d.name,x0,yy-4);
+  [loose,c.front,c.side,c.back].forEach(function(im,k){ctx.drawImage(im,x0+k*(S*Z+pad),yy,S*Z,S*Z);});
+  yy+=S*Z+18; if(yy>700){yy=16;x0+=4*(S*Z+pad)+30;}
+});
+</script></body></html>
