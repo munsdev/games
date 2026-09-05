@@ -1,4 +1,4 @@
-<title>Perp Walk</title>
+<title>On the List</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -14,6 +14,8 @@
   --dim: #78849a;
   --accent: #f5b942;
   --steel: #c9ced8;
+  --pwed-edge: #1e2632; --pwed-sunk: #080b11; --pwed-text: #dfe6f2;
+  --pwed-dim: #78849a; --pwed-label: #c9ced8; --pwed-accent: #f5b942;
   --display: 'Silkscreen', 'Courier New', monospace;
   --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 }
@@ -202,6 +204,34 @@ kbd {
   max-width: 58ch;
 }
 
+/* ---- make your own ---- */
+
+.maker { display: flex; flex-direction: column; gap: 12px; }
+.makerGrid { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(260px, 320px); gap: 16px; align-items: start; }
+@media (max-width: 700px) { .makerGrid { grid-template-columns: 1fr; } }
+
+.facings { display: flex; flex-wrap: wrap; gap: 10px; }
+.facings > div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.facings canvas { image-rendering: pixelated; background: #080b11; border: 1px solid var(--bezel); }
+.facings span { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+
+.makerBar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+
+.btn {
+  font: inherit; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text); background: #19202b; border: 1px solid var(--edge);
+  border-radius: 3px; padding: 6px 11px; cursor: pointer;
+}
+.btn:hover { background: #212a38; }
+.btn.primary { color: #171a12; background: var(--accent); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover { background: #ffc95c; }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.msg { font-size: 11px; color: var(--dim); }
+.msg.good { color: #7fc98a; }
+
+.makerForm { background: transparent; }
+
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;
@@ -217,8 +247,8 @@ kbd {
 <div class="room">
 
   <header class="marquee">
-    <h1>Perp Walk</h1>
-    <p class="tag">Arrest every executive &middot; the column behind you blocks the way</p>
+    <h1>On the List</h1>
+    <p class="tag">Everyone out here is on the list &middot; the column behind you blocks the way</p>
   </header>
 
   <div class="cabinet">
@@ -236,6 +266,7 @@ kbd {
     <span><kbd>Space</kbd> start</span>
     <span><kbd>M</kbd> mute</span>
     <span><kbd>R</kbd> restart</span>
+    <span><kbd>C</kbd> change officer</span>
   </div>
 
   <section class="board">
@@ -247,6 +278,24 @@ kbd {
     <ul id="lot" class="lot"></ul>
   </section>
 
+
+  <section class="board maker">
+    <h2>Your own officer</h2>
+    <p class="note">Build someone and they join the line-up on the title screen. Saved in
+      this browser, so they are still there next time you play.</p>
+    <div class="makerGrid">
+      <div>
+        <div class="facings" id="myFacings"></div>
+        <div class="makerBar">
+          <button type="button" class="btn primary" id="saveMine">Save to line-up</button>
+          <button type="button" class="btn" id="clearMine">Remove</button>
+          <span class="msg" id="mineMsg"></span>
+        </div>
+      </div>
+      <form class="makerForm" id="myControls" autocomplete="off"></form>
+    </div>
+  </section>
+
   <p class="colophon">Endless. Speed ramps from one step every 0.30s to 0.11s by a score
     of 30. Your best is kept in this browser.</p>
 
@@ -256,6 +305,7 @@ kbd {
   <script src="../src/pixel.js"></script>
   <script src="../src/font.js"></script>
   <script src="../src/sprites.js"></script>
+  <script src="../src/charedit.js"></script>
   <script src="../src/roster.js"></script>
   <script src="../src/audio.js"></script>
   <script src="../src/game.js"></script>
@@ -276,6 +326,49 @@ kbd {
   }
   fit();
   window.addEventListener('resize', fit);
+})();
+
+/* The "make your own" panel: the shared editor, a live preview, and the two
+   buttons that push a character into the line-up or take it back out. */
+(function () {
+  var mount = document.getElementById('myControls');
+  var box = document.getElementById('myFacings');
+  var msg = document.getElementById('mineMsg');
+  var existing = PW.player.get();
+
+  function draw(def) {
+    var art = PW.bake(def, { cuffed: false });
+    box.textContent = '';
+    ['front', 'side', 'back'].forEach(function (f) {
+      var wrap = document.createElement('div');
+      var cv = document.createElement('canvas');
+      cv.width = PW.SPRITE * 4;
+      cv.height = PW.SPRITE * 4;
+      var c = cv.getContext('2d');
+      c.imageSmoothingEnabled = false;
+      c.drawImage(art[f], 0, 0, cv.width, cv.height);
+      var label = document.createElement('span');
+      label.textContent = f;
+      wrap.appendChild(cv);
+      wrap.appendChild(label);
+      box.appendChild(wrap);
+    });
+  }
+
+  var ed = PW.createEditor(mount, { value: existing || undefined, onChange: draw });
+
+  document.getElementById('saveMine').addEventListener('click', function () {
+    var d = ed.get();
+    PW.player.save(d);
+    msg.className = 'msg good';
+    msg.textContent = d.name + ' saved - they are selected on the title screen.';
+  });
+
+  document.getElementById('clearMine').addEventListener('click', function () {
+    PW.player.clear();
+    msg.className = 'msg';
+    msg.textContent = 'Removed from the line-up.';
+  });
 })();
 
 /* The wanted board draws itself from the same sprites the game just baked,

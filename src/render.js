@@ -1,5 +1,5 @@
 /* Everything that puts pixels on the buffer: the plaza, the column, the HUD
-   and the two full-screen states (shift start, shift over). */
+   and the full-screen states (who's serving, shift start, shift over). */
 (function (PW) {
   'use strict';
 
@@ -150,9 +150,8 @@
     PW.blit(ctx, art.loose, x, y + bob, false);
   }
 
-  function drawLine(ctx, g) {
+  function drawLine(ctx, g, officer) {
     var t = PW.stepProgress(g);
-    var officer = PW.art.officer;
     // Back to front, so each figure overlaps the one behind it.
     for (var i = g.body.length - 1; i >= 0; i -= 1) {
       var seg = g.body[i];
@@ -182,13 +181,51 @@
 
   // ------------------------------------------------------------- screens ---
 
+  function drawSelect(ctx, entries, index, clock, best) {
+    ctx.fillStyle = 'rgba(8, 11, 17, 0.92)';
+    ctx.fillRect(V.px, V.py, PLAY_W, PLAY_H);
+
+    var cx = V.px + PLAY_W / 2;
+    PW.textCentered(ctx, 'ON THE LIST', cx, V.py + 44, PW.UI.text, 3);
+    PW.textCentered(ctx, 'WHO IS SERVING THE WARRANT', cx, V.py + 84, PW.UI.textDim, 1);
+
+    var slot = PLAY_W / entries.length;
+    var rowY = V.py + 142;
+
+    for (var i = 0; i < entries.length; i += 1) {
+      var mid = V.px + slot * i + slot / 2;
+      var sx = Math.round(mid - PW.SPRITE);
+      var chosen = i === index;
+
+      if (chosen) {
+        var pulse = 0.5 + Math.sin(clock * 6) * 0.25;
+        ctx.fillStyle = 'rgba(245, 185, 66, ' + pulse.toFixed(2) + ')';
+        ctx.fillRect(sx - 6, rowY - 6, PW.SPRITE * 2 + 12, 1);
+        ctx.fillRect(sx - 6, rowY + PW.SPRITE * 2 + 5, PW.SPRITE * 2 + 12, 1);
+        ctx.fillRect(sx - 6, rowY - 6, 1, PW.SPRITE * 2 + 12);
+        ctx.fillRect(sx + PW.SPRITE * 2 + 5, rowY - 6, 1, PW.SPRITE * 2 + 12);
+      }
+
+      ctx.save();
+      if (!chosen) ctx.globalAlpha = 0.62;
+      ctx.drawImage(entries[i].art.front, sx, rowY, PW.SPRITE * 2, PW.SPRITE * 2);
+      ctx.restore();
+
+      PW.textCentered(ctx, entries[i].name, mid, rowY + PW.SPRITE * 2 + 16,
+        chosen ? PW.UI.accent : PW.UI.textDim, 1);
+    }
+
+    PW.textCentered(ctx, 'LEFT / RIGHT TO CHOOSE', cx, V.py + PLAY_H - 84, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'PRESS ENTER TO BEGIN', cx, V.py + PLAY_H - 64, PW.UI.text, 1);
+  }
+
   function drawReady(ctx) {
     // Sits high on the board so it never covers the officer's start cell.
     var cx = V.px + PLAY_W / 2;
     var top = V.py + 46;
     panel(ctx, top, 88);
     PW.textCentered(ctx, 'SHIFT START', cx, top + 12, PW.UI.text, 2);
-    PW.textCentered(ctx, 'ARREST EVERY EXECUTIVE ON THE PLAZA', cx, top + 38, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'EVERY NAME ON THE LIST IS OUT HERE', cx, top + 38, PW.UI.textDim, 1);
     PW.textCentered(ctx, 'THE COLUMN BEHIND YOU BLOCKS THE WAY', cx, top + 52, PW.UI.textDim, 1);
     PW.textCentered(ctx, 'STEER TO BEGIN', cx, top + 72, PW.UI.accent, 1);
   }
@@ -222,8 +259,22 @@
     ctx.fillRect(0, 0, V.width, V.height);
     ctx.drawImage(lotTile, 0, HUD_H);
 
+    if (ui.screen === 'select') {
+      drawSelect(ctx, ui.entries, ui.selectIndex, ui.clock, ui.best);
+      ctx.fillStyle = PW.UI.barBg;
+      ctx.fillRect(0, 0, V.width, HUD_H);
+      ctx.fillStyle = PW.UI.frameEdge;
+      ctx.fillRect(0, HUD_H - 1, V.width, 1);
+      PW.text(ctx, 'ON THE LIST', 8, 10, PW.UI.textDim, 1);
+      if (ui.best > 0) {
+        var lbl = 'BEST ' + ui.best;
+        PW.text(ctx, lbl, V.width - 8 - PW.textWidth(lbl, 1), 10, PW.UI.accent, 1);
+      }
+      return;
+    }
+
     drawTarget(ctx, g, ui.clock);
-    drawLine(ctx, g);
+    drawLine(ctx, g, ui.playerArt);
     ui.dust.draw(ctx);
     drawHud(ctx, g, ui.best, ui.pop);
 

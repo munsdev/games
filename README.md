@@ -1,8 +1,9 @@
-# Perp Walk
+# On the List
 
-A small browser arcade game. You patrol a plaza arresting white-collar
-executives, and each one you catch joins the handcuffed column trailing behind
-you. Walk into your own column or off the edge and the shift is over.
+A small browser arcade game. Everyone out here is on a list, and you are the one
+serving the warrants: patrol the plaza arresting white-collar executives, and
+each one you catch joins the handcuffed column trailing behind you. Walk into
+your own column or off the edge and the shift is over.
 
 Mechanically it is endless Snake — a public-domain arcade form from 1976 — with an
 original cast, art, and framing. Everything here is written from scratch.
@@ -15,6 +16,7 @@ Open `index.html` in a browser. No build step, no dependencies, no server needed
 | --- | --- |
 | Arrow keys / WASD | Steer |
 | Space / Enter | Start, or retry after being stopped |
+| `C` | Back to the line-up |
 | Click / tap | Steer toward the tap |
 | `M` | Mute |
 | `R` | Restart |
@@ -29,7 +31,9 @@ Open `index.html` in a browser. No build step, no dependencies, no server needed
 - **The column.** An arrested executive keeps their own face, build, and clothes
   and switches to a handcuffed pose, hands joined in front. They drop whatever
   they were carrying.
-- **Best score** persists in `localStorage` under `perpwalk.best`.
+- **Officers.** Four presets, plus one you build yourself in the page's own
+  editor. The custom officer, the one you picked and your best score all persist
+  in `localStorage` under `onthelist.*`.
 
 ## Layout
 
@@ -39,7 +43,8 @@ Open `index.html` in a browser. No build step, no dependencies, no server needed
 | `src/pixel.js` | Low-res drawing surface, whole-number upscaling, frame loop |
 | `src/font.js` | 5x7 bitmap font |
 | `src/sprites.js` | Parametric character renderer |
-| `src/roster.js` | The officer and the ten executives |
+| `src/roster.js` | The four officers and ten executives |
+| `src/charedit.js` | The character editor panel, shared by the game page and the forge |
 | `src/audio.js` | Four blips and a mute toggle |
 | `src/game.js` | Rules: cells, movement, growth, collisions |
 | `src/render.js` | The plaza, the column, HUD, and full-screen states |
@@ -47,8 +52,8 @@ Open `index.html` in a browser. No build step, no dependencies, no server needed
 
 Characters are described as small objects rather than hand-drawn pixel data, so
 `src/sprites.js` bakes every sprite once at boot from shared parts. Adding a
-character means adding a few lines to `src/roster.js`; the officer's skin tone,
-build, and uniform colours are single values on `PW.OFFICER`.
+character means adding a few lines to `src/roster.js`. `docs/characters.md` is
+the standalone field reference.
 
 ## Development
 
@@ -65,6 +70,6 @@ python3 -m http.server 8777      # then open the harnesses below
   states without playing.
 - `node tools/bundle.js [in.html] [out.html]` inlines the `../src/*.js` script
   tags of a page to produce a single self-contained file. Defaults to
-  `tools/page.html` -> `dist/perp-walk.html`; pass `tools/editor.html
+  `tools/page.html` -> `dist/on-the-list.html`; pass `tools/editor.html
   dist/character-editor.html` for the editor. `src/` is the source of truth,
   `dist/` is only build output.

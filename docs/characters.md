@@ -15,9 +15,12 @@ Required: `id`, `name`, `skin`, `shirt`, `pants`, `shoes`. Everything else optio
 | `skin` | `pale` `peach` `olive` `tan` `brown` `deep` |
 | `build` | `normal` `heavy` `lean` |
 | `hair` | `black` `dark` `brown` `ginger` `blonde` `grey` `white` |
-| `hairStyle` | `buzz` `slick` `rough` `long` `bald` |
+| `hairStyle` | `buzz` `crop` `slick` `swoop` `pomp` `rough` `curls` `afro` `bun` `long` `bald` |
 | `beard` | `{ style: 'full'\|'goatee'\|'stubble', color: <hair value> }` |
 | `eyes` | `plain` `round` `shades` |
+| `eyeColor` | hex — iris colour; omit for the default |
+| `makeup` | `shadow` `liner` `both` — needs `makeupColor` |
+| `makeupColor` | hex |
 | `hat` | `cap` `beanie` `cowboy` `police` — requires `hatColor` |
 | `hatColor` | hex |
 | `shirt` | hex |
@@ -27,7 +30,8 @@ Required: `id`, `name`, `skin`, `shirt`, `pants`, `shoes`. Everything else optio
 | `prop` | `briefcase` `laptop` `cup` `phone` `pills` `keyring` `cigar` `derrick` |
 | `tie` | hex |
 | `lapels` | hex |
-| `pinstripe` | hex |
+| `pattern` | `stripes` `bands` `check` `dots` — needs `patternColor` |
+| `patternColor` | hex |
 | `chain` | `true` |
 | `badge` | `true` |
 | `belt` | hex |
@@ -51,7 +55,8 @@ Emit only this, one object per character, comma-separated. No prose.
   id: 'shipping', name: 'PORT MAGNATE',
   skin: 'olive', build: 'heavy', hair: 'grey', hairStyle: 'slick',
   hat: 'cap', hatColor: '#2b3a4a',
-  shirt: '#3d5a6c', lapels: '#2c4351', sleeves: 'long', chain: true,
-  pants: '#2b3340', shoes: '#181c24', eyes: 'plain', prop: 'briefcase'
+  eyes: 'plain', eyeColor: '#3f6b52',
+  shirt: '#3d5a6c', sleeves: 'long', pattern: 'stripes', patternColor: '#2c4351', chain: true,
+  pants: '#2b3340', shoes: '#181c24', prop: 'briefcase'
 },
 ```

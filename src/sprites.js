@@ -61,7 +61,36 @@
 
   function hairFront(s, o, hc, style) {
     if (!hc || style === 'bald') return;
-    if (style === 'rough') {
+    if (style === 'swoop') {
+      // Fringe sweeping across the forehead, thick on the left.
+      s.add(o + 7, 1, 10, 3, hc);
+      s.add(o + 7, 4, 3, 2, hc);
+      s.add(o + 10, 4, 5, 1, hc);
+      s.add(o + 16, 3, 1, 3, hc);
+    } else if (style === 'pomp') {
+      s.add(o + 8, 0, 8, 2, hc);
+      s.add(o + 7, 2, 10, 2, hc);
+      s.add(o + 7, 4, 1, 2, hc);
+      s.add(o + 16, 4, 1, 2, hc);
+    } else if (style === 'afro') {
+      s.add(o + 6, 0, 12, 4, hc);
+      s.add(o + 5, 2, 1, 4, hc);
+      s.add(o + 18, 2, 1, 4, hc);
+      s.add(o + 6, 4, 1, 3, hc);
+      s.add(o + 17, 4, 1, 3, hc);
+    } else if (style === 'curls') {
+      s.add(o + 7, 1, 10, 3, hc);
+      s.add(o + 6, 3, 1, 3, hc);
+      s.add(o + 17, 3, 1, 3, hc);
+      s.det(o + 7, 0, 2, 1, hc);
+      s.det(o + 11, 0, 2, 1, hc);
+      s.det(o + 15, 0, 2, 1, hc);
+    } else if (style === 'bun') {
+      s.add(o + 10, 0, 4, 2, hc);
+      s.add(o + 8, 2, 8, 2, hc);
+      s.add(o + 7, 3, 1, 3, hc);
+      s.add(o + 16, 3, 1, 3, hc);
+    } else if (style === 'rough') {
       s.add(o + 7, 1, 10, 3, hc);
       s.add(o + 6, 3, 1, 4, hc);
       s.add(o + 17, 3, 1, 4, hc);
@@ -86,7 +115,26 @@
 
   function hairSide(s, o, hc, style) {
     if (!hc || style === 'bald') return;
-    if (style === 'rough') {
+    if (style === 'swoop') {
+      s.add(o + 9, 2, 7, 2, hc);
+      s.add(o + 8, 3, 2, 4, hc);
+      s.add(o + 12, 4, 4, 1, hc);
+    } else if (style === 'pomp') {
+      s.add(o + 10, 0, 6, 2, hc);
+      s.add(o + 9, 2, 7, 2, hc);
+      s.add(o + 8, 3, 1, 4, hc);
+    } else if (style === 'afro') {
+      s.add(o + 7, 0, 11, 4, hc);
+      s.add(o + 7, 3, 2, 4, hc);
+    } else if (style === 'curls') {
+      s.add(o + 9, 1, 7, 3, hc);
+      s.add(o + 8, 3, 1, 4, hc);
+      s.det(o + 9, 0, 2, 1, hc);
+      s.det(o + 13, 0, 2, 1, hc);
+    } else if (style === 'bun') {
+      s.add(o + 7, 3, 3, 3, hc);
+      s.add(o + 9, 2, 7, 2, hc);
+    } else if (style === 'rough') {
       s.add(o + 8, 1, 8, 3, hc);
       s.add(o + 8, 3, 2, 5, hc);
       s.det(o + 9, 0, 2, 1, hc);
@@ -103,7 +151,11 @@
   function hairBack(s, o, hc, style) {
     if (!hc || style === 'bald') return;
     if (style === 'long') s.add(o + 7, 2, 10, 8, hc);
-    else if (style === 'rough') s.add(o + 7, 1, 10, 7, hc);
+    else if (style === 'rough' || style === 'curls') s.add(o + 7, 1, 10, 7, hc);
+    else if (style === 'afro') { s.add(o + 6, 0, 12, 8, hc); s.add(o + 5, 2, 1, 4, hc); s.add(o + 18, 2, 1, 4, hc); }
+    else if (style === 'bun') { s.add(o + 8, 2, 8, 6, hc); s.add(o + 10, 0, 4, 2, hc); }
+    else if (style === 'pomp') s.add(o + 8, 1, 8, 7, hc);
+    else if (style === 'swoop') s.add(o + 7, 2, 10, 6, hc);
     else s.add(o + 8, 2, 8, 6, hc);
   }
 
@@ -169,6 +221,39 @@
     }
   }
 
+
+  /* Shirt patterns are laid flat over the torso, so they follow the garment
+     colour without disturbing its outline. */
+  function shirtPattern(s, x, y, w, h, kind, color) {
+    if (!kind || kind === 'none' || !color) return;
+    var i, j;
+    if (kind === 'stripes') {
+      for (i = x + 1; i < x + w - 1; i += 3) s.det(i, y, 1, h, color);
+    } else if (kind === 'bands') {
+      for (j = y; j < y + h; j += 2) s.det(x, j, w, 1, color);
+    } else if (kind === 'check') {
+      for (j = 0; j < h; j += 1) {
+        for (i = 0; i < w; i += 1) {
+          if ((Math.floor(i / 2) + Math.floor(j / 2)) % 2 === 0) s.det(x + i, y + j, 1, 1, color);
+        }
+      }
+    } else if (kind === 'dots') {
+      for (j = 1; j < h; j += 2) {
+        for (i = 1; i < w - 1; i += 3) {
+          s.det(x + i + (j % 4 === 1 ? 0 : 1), y + j, 1, 1, color);
+        }
+      }
+    }
+  }
+
+  function patternOf(def) {
+    return def.pattern || (def.pinstripe ? 'stripes' : null);
+  }
+
+  function patternColorOf(def) {
+    return def.patternColor || def.pinstripe || null;
+  }
+
   // ------------------------------------------------------------- torso art --
 
   function torsoDetail(s, o, b, def, facing) {
@@ -176,11 +261,7 @@
     // Seam between sleeve and body, so a matching-colour arm still reads.
     s.det(o + b.torsoX, TORSO_Y, 1, TORSO_H, PW.shade(def.shirt, 0.72));
     s.det(o + b.torsoX + b.torsoW - 1, TORSO_Y, 1, TORSO_H, PW.shade(def.shirt, 0.72));
-    if (def.pinstripe) {
-      for (var px = o + b.torsoX + 2; px < o + b.torsoX + b.torsoW - 1; px += 3) {
-        s.det(px, TORSO_Y, 1, TORSO_H, def.pinstripe);
-      }
-    }
+    shirtPattern(s, o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, patternOf(def), patternColorOf(def));
     if (facing === 'back') {
       if (def.backText) {
         s.det(o + b.torsoX + 2, TORSO_Y + 2, b.torsoW - 4, 1, def.backText);
@@ -264,6 +345,18 @@
       s.det(o + 11, 9, 2, 1, skin.shade);
     }
 
+    // Makeup goes on the lid first so the eyes themselves sit on top of it.
+    if (def.makeup && def.makeup !== 'none' && def.eyes !== 'shades') {
+      var mc = def.makeupColor || '#8a4a7a';
+      if (def.makeup === 'shadow' || def.makeup === 'both') {
+        s.det(o + 9, 4, 2, 1, mc); s.det(o + 13, 4, 2, 1, mc);
+      }
+      if (def.makeup === 'liner' || def.makeup === 'both') {
+        s.det(o + 9, 5, 2, 1, mc); s.det(o + 13, 5, 2, 1, mc);
+        s.det(o + 8, 5, 1, 1, mc); s.det(o + 15, 5, 1, 1, mc);
+      }
+    }
+
     if (def.eyes === 'shades') {
       s.add(o + 9, 5, 7, 3, '#181c24');
       s.det(o + 10, 6, 1, 1, '#4a5568');
@@ -274,11 +367,14 @@
       s.det(o + 13, 5, 3, 1, fr); s.det(o + 13, 7, 3, 1, fr);
       s.det(o + 13, 6, 1, 1, fr); s.det(o + 15, 6, 1, 1, fr);
       s.det(o + 11, 6, 2, 1, fr);
-      // Pale glass in the lenses, so the rings read as spectacles and not a visor.
-      s.det(o + 9, 6, 1, 1, '#b9c6d8'); s.det(o + 14, 6, 1, 1, '#b9c6d8');
+      // Pale glass unless an eye colour is given, so the rings read as
+      // spectacles rather than a visor.
+      var lens = def.eyeColor || '#b9c6d8';
+      s.det(o + 9, 6, 1, 1, lens); s.det(o + 14, 6, 1, 1, lens);
     } else {
-      s.det(o + 10, 6, 1, 2, '#1f2430');
-      s.det(o + 13, 6, 1, 2, '#1f2430');
+      var iris = def.eyeColor || '#1f2430';
+      s.det(o + 10, 6, 1, 2, iris);
+      s.det(o + 13, 6, 1, 2, iris);
     }
 
     hairFront(s, o, hc, def.hairStyle);
@@ -301,6 +397,7 @@
     if (def.belt) s.det(tx, HIP_Y, narrow, 1, def.belt);
 
     s.add(tx, TORSO_Y, narrow, TORSO_H, def.shirt);
+    shirtPattern(s, tx, TORSO_Y, narrow, TORSO_H, patternOf(def), patternColorOf(def));
 
     if (cuffed) {
       // Arms out in front, wrists banded.
@@ -323,13 +420,19 @@
       s.add(o + 9, 6, 1, 4, bc);
     }
 
+    if (def.makeup && def.makeup !== 'none' && def.eyes !== 'shades') {
+      var smc = def.makeupColor || '#8a4a7a';
+      if (def.makeup === 'shadow' || def.makeup === 'both') s.det(o + 13, 4, 2, 1, smc);
+      if (def.makeup === 'liner' || def.makeup === 'both') s.det(o + 13, 5, 3, 1, smc);
+    }
+
     if (def.eyes === 'shades') s.add(o + 12, 5, 4, 3, '#181c24');
     else if (def.eyes === 'round') {
       s.det(o + 13, 5, 3, 1, '#2b3140');
       s.det(o + 13, 7, 3, 1, '#2b3140');
       s.det(o + 13, 6, 1, 1, '#2b3140');
-      s.det(o + 14, 6, 1, 1, '#1a1d24');
-    } else s.det(o + 14, 6, 1, 2, '#1f2430');
+      s.det(o + 14, 6, 1, 1, def.eyeColor || '#1a1d24');
+    } else s.det(o + 14, 6, 1, 2, def.eyeColor || '#1f2430');
 
     s.det(o + 11, 7, 1, 1, skin.shade); // ear
 

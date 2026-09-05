@@ -1,6 +1,6 @@
 /* Who is in the game.
 
-   The OFFICER is who you steer, and is never cuffed.
+   PLAYERS are pickable before a shift and are never cuffed.
    EXECS are the pickups. Each one is baked twice: loose (holding whatever
    prop they carry) for when they're standing in the lot, and cuffed for once
    they've joined the line behind you. Their clothes stay the same either way,
@@ -11,23 +11,42 @@
   /* One officer, no picker: plain municipal police so the role reads at a
      glance - navy uniform, capped shield, duty belt. Skin tone, build and
      colours are all single-value changes here. */
-  PW.OFFICER = {
-    id: 'officer',
-    name: 'OFFICER',
-    skin: 'tan',
-    build: 'normal',
-    hair: 'dark',
-    hairStyle: 'buzz',
-    hat: 'police',
-    hatColor: '#1f2942',
-    shirt: '#33436b',
-    sleeves: 'long',
-    pants: '#232c42',
-    shoes: '#141821',
-    belt: '#141821',
-    badge: true,
-    eyes: 'plain'
-  };
+  /* Four people who might plausibly be serving a warrant. Each leans on a
+     different silhouette cue so they stay apart at 24px: cap, swoop, wide hat,
+     shades. None is ever cuffed. */
+  PW.PLAYERS = [
+    {
+      id: 'officer', name: 'OFFICER',
+      skin: 'tan', build: 'normal', hair: 'dark', hairStyle: 'buzz',
+      hat: 'police', hatColor: '#1f2942',
+      shirt: '#33436b', sleeves: 'long', belt: '#141821', badge: true,
+      pants: '#232c42', shoes: '#141821', eyes: 'plain'
+    },
+    {
+      id: 'detective', name: 'DETECTIVE',
+      skin: 'peach', build: 'normal', hair: 'brown', hairStyle: 'swoop',
+      shirt: '#8a7550', lapels: '#6d5b3c', sleeves: 'long', tie: '#7a2f3a',
+      belt: '#3b2f22', badge: true,
+      pants: '#4a4034', shoes: '#2a231b',
+      eyes: 'plain', eyeColor: '#3f6b52', makeup: 'liner', makeupColor: '#5c3550'
+    },
+    {
+      id: 'marshal', name: 'MARSHAL',
+      skin: 'brown', build: 'heavy', hair: 'black', hairStyle: 'crop',
+      hat: 'cowboy', hatColor: '#4a3a28',
+      shirt: '#5d6b52', sleeves: 'long', belt: '#2d2318', badge: true,
+      pants: '#3b4235', shoes: '#2a231b', eyes: 'plain'
+    },
+    {
+      id: 'agent', name: 'AGENT',
+      skin: 'pale', build: 'lean', hair: 'black', hairStyle: 'slick',
+      shirt: '#1f242e', lapels: '#141821', sleeves: 'long', tie: '#2b3550',
+      pants: '#1f242e', shoes: '#141821', eyes: 'shades'
+    }
+  ];
+
+  // Kept as a name for the default, for anything that wants just the one.
+  PW.OFFICER = PW.PLAYERS[0];
 
   PW.EXECS = [
     {
@@ -53,7 +72,7 @@
     {
       id: 'equity', name: 'PE VULTURE',
       skin: 'pale', build: 'lean', hair: 'grey', hairStyle: 'slick',
-      shirt: '#2d323d', pinstripe: '#454b59', sleeves: 'long', tie: '#8e2b3a',
+      shirt: '#2d323d', pattern: 'stripes', patternColor: '#454b59', sleeves: 'long', tie: '#8e2b3a',
       pants: '#2d323d', shoes: '#181c24', eyes: 'plain', prop: 'briefcase'
     },
     {
@@ -95,10 +114,10 @@
     }
   ];
 
-  PW.art = { officer: null, execs: [] };
+  PW.art = { players: [], execs: [] };
 
   PW.bakeAll = function () {
-    PW.art.officer = PW.bake(PW.OFFICER, { cuffed: false });
+    PW.art.players = PW.PLAYERS.map(function (d) { return PW.bake(d, { cuffed: false }); });
     PW.art.execs = PW.EXECS.map(function (d) {
       return {
         loose: PW.bake(d, { cuffed: false }).front,

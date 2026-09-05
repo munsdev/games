@@ -36,13 +36,6 @@ header p { margin: 0; color: var(--dim); font-size: 12px; }
 .strip .mine canvas { border-color: var(--accent); }
 .strip .mine figcaption { color: var(--accent); }
 
-fieldset { border: 0; border-top: 1px solid var(--edge); margin: 0; padding: 12px 0 0; }
-fieldset:first-of-type { border-top: 0; padding-top: 0; }
-/* Floating the legend takes it out of the border-straddling slot. */
-legend { float: left; width: 100%; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); padding: 0 0 8px; }
-.field { display: grid; grid-template-columns: 88px 1fr; align-items: center; gap: 8px; margin-bottom: 6px; }
-.field > label { font-size: 11px; color: var(--dim); }
-.pair { display: flex; align-items: center; gap: 6px; }
 
 input[type="text"], select {
   width: 100%; font: inherit; font-size: 12px; color: var(--text);
@@ -50,7 +43,6 @@ input[type="text"], select {
 }
 input[type="color"] { width: 34px; height: 26px; padding: 0; background: var(--sunk); border: 1px solid var(--edge); border-radius: 3px; cursor: pointer; }
 input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
-.hex { font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
 
 button {
   font: inherit; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
@@ -246,7 +238,36 @@ window.PW = window.PW || {};
 
   function hairFront(s, o, hc, style) {
     if (!hc || style === 'bald') return;
-    if (style === 'rough') {
+    if (style === 'swoop') {
+      // Fringe sweeping across the forehead, thick on the left.
+      s.add(o + 7, 1, 10, 3, hc);
+      s.add(o + 7, 4, 3, 2, hc);
+      s.add(o + 10, 4, 5, 1, hc);
+      s.add(o + 16, 3, 1, 3, hc);
+    } else if (style === 'pomp') {
+      s.add(o + 8, 0, 8, 2, hc);
+      s.add(o + 7, 2, 10, 2, hc);
+      s.add(o + 7, 4, 1, 2, hc);
+      s.add(o + 16, 4, 1, 2, hc);
+    } else if (style === 'afro') {
+      s.add(o + 6, 0, 12, 4, hc);
+      s.add(o + 5, 2, 1, 4, hc);
+      s.add(o + 18, 2, 1, 4, hc);
+      s.add(o + 6, 4, 1, 3, hc);
+      s.add(o + 17, 4, 1, 3, hc);
+    } else if (style === 'curls') {
+      s.add(o + 7, 1, 10, 3, hc);
+      s.add(o + 6, 3, 1, 3, hc);
+      s.add(o + 17, 3, 1, 3, hc);
+      s.det(o + 7, 0, 2, 1, hc);
+      s.det(o + 11, 0, 2, 1, hc);
+      s.det(o + 15, 0, 2, 1, hc);
+    } else if (style === 'bun') {
+      s.add(o + 10, 0, 4, 2, hc);
+      s.add(o + 8, 2, 8, 2, hc);
+      s.add(o + 7, 3, 1, 3, hc);
+      s.add(o + 16, 3, 1, 3, hc);
+    } else if (style === 'rough') {
       s.add(o + 7, 1, 10, 3, hc);
       s.add(o + 6, 3, 1, 4, hc);
       s.add(o + 17, 3, 1, 4, hc);
@@ -271,7 +292,26 @@ window.PW = window.PW || {};
 
   function hairSide(s, o, hc, style) {
     if (!hc || style === 'bald') return;
-    if (style === 'rough') {
+    if (style === 'swoop') {
+      s.add(o + 9, 2, 7, 2, hc);
+      s.add(o + 8, 3, 2, 4, hc);
+      s.add(o + 12, 4, 4, 1, hc);
+    } else if (style === 'pomp') {
+      s.add(o + 10, 0, 6, 2, hc);
+      s.add(o + 9, 2, 7, 2, hc);
+      s.add(o + 8, 3, 1, 4, hc);
+    } else if (style === 'afro') {
+      s.add(o + 7, 0, 11, 4, hc);
+      s.add(o + 7, 3, 2, 4, hc);
+    } else if (style === 'curls') {
+      s.add(o + 9, 1, 7, 3, hc);
+      s.add(o + 8, 3, 1, 4, hc);
+      s.det(o + 9, 0, 2, 1, hc);
+      s.det(o + 13, 0, 2, 1, hc);
+    } else if (style === 'bun') {
+      s.add(o + 7, 3, 3, 3, hc);
+      s.add(o + 9, 2, 7, 2, hc);
+    } else if (style === 'rough') {
       s.add(o + 8, 1, 8, 3, hc);
       s.add(o + 8, 3, 2, 5, hc);
       s.det(o + 9, 0, 2, 1, hc);
@@ -288,7 +328,11 @@ window.PW = window.PW || {};
   function hairBack(s, o, hc, style) {
     if (!hc || style === 'bald') return;
     if (style === 'long') s.add(o + 7, 2, 10, 8, hc);
-    else if (style === 'rough') s.add(o + 7, 1, 10, 7, hc);
+    else if (style === 'rough' || style === 'curls') s.add(o + 7, 1, 10, 7, hc);
+    else if (style === 'afro') { s.add(o + 6, 0, 12, 8, hc); s.add(o + 5, 2, 1, 4, hc); s.add(o + 18, 2, 1, 4, hc); }
+    else if (style === 'bun') { s.add(o + 8, 2, 8, 6, hc); s.add(o + 10, 0, 4, 2, hc); }
+    else if (style === 'pomp') s.add(o + 8, 1, 8, 7, hc);
+    else if (style === 'swoop') s.add(o + 7, 2, 10, 6, hc);
     else s.add(o + 8, 2, 8, 6, hc);
   }
 
@@ -354,6 +398,39 @@ window.PW = window.PW || {};
     }
   }
 
+
+  /* Shirt patterns are laid flat over the torso, so they follow the garment
+     colour without disturbing its outline. */
+  function shirtPattern(s, x, y, w, h, kind, color) {
+    if (!kind || kind === 'none' || !color) return;
+    var i, j;
+    if (kind === 'stripes') {
+      for (i = x + 1; i < x + w - 1; i += 3) s.det(i, y, 1, h, color);
+    } else if (kind === 'bands') {
+      for (j = y; j < y + h; j += 2) s.det(x, j, w, 1, color);
+    } else if (kind === 'check') {
+      for (j = 0; j < h; j += 1) {
+        for (i = 0; i < w; i += 1) {
+          if ((Math.floor(i / 2) + Math.floor(j / 2)) % 2 === 0) s.det(x + i, y + j, 1, 1, color);
+        }
+      }
+    } else if (kind === 'dots') {
+      for (j = 1; j < h; j += 2) {
+        for (i = 1; i < w - 1; i += 3) {
+          s.det(x + i + (j % 4 === 1 ? 0 : 1), y + j, 1, 1, color);
+        }
+      }
+    }
+  }
+
+  function patternOf(def) {
+    return def.pattern || (def.pinstripe ? 'stripes' : null);
+  }
+
+  function patternColorOf(def) {
+    return def.patternColor || def.pinstripe || null;
+  }
+
   // ------------------------------------------------------------- torso art --
 
   function torsoDetail(s, o, b, def, facing) {
@@ -361,11 +438,7 @@ window.PW = window.PW || {};
     // Seam between sleeve and body, so a matching-colour arm still reads.
     s.det(o + b.torsoX, TORSO_Y, 1, TORSO_H, PW.shade(def.shirt, 0.72));
     s.det(o + b.torsoX + b.torsoW - 1, TORSO_Y, 1, TORSO_H, PW.shade(def.shirt, 0.72));
-    if (def.pinstripe) {
-      for (var px = o + b.torsoX + 2; px < o + b.torsoX + b.torsoW - 1; px += 3) {
-        s.det(px, TORSO_Y, 1, TORSO_H, def.pinstripe);
-      }
-    }
+    shirtPattern(s, o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, patternOf(def), patternColorOf(def));
     if (facing === 'back') {
       if (def.backText) {
         s.det(o + b.torsoX + 2, TORSO_Y + 2, b.torsoW - 4, 1, def.backText);
@@ -449,6 +522,18 @@ window.PW = window.PW || {};
       s.det(o + 11, 9, 2, 1, skin.shade);
     }
 
+    // Makeup goes on the lid first so the eyes themselves sit on top of it.
+    if (def.makeup && def.makeup !== 'none' && def.eyes !== 'shades') {
+      var mc = def.makeupColor || '#8a4a7a';
+      if (def.makeup === 'shadow' || def.makeup === 'both') {
+        s.det(o + 9, 4, 2, 1, mc); s.det(o + 13, 4, 2, 1, mc);
+      }
+      if (def.makeup === 'liner' || def.makeup === 'both') {
+        s.det(o + 9, 5, 2, 1, mc); s.det(o + 13, 5, 2, 1, mc);
+        s.det(o + 8, 5, 1, 1, mc); s.det(o + 15, 5, 1, 1, mc);
+      }
+    }
+
     if (def.eyes === 'shades') {
       s.add(o + 9, 5, 7, 3, '#181c24');
       s.det(o + 10, 6, 1, 1, '#4a5568');
@@ -459,11 +544,14 @@ window.PW = window.PW || {};
       s.det(o + 13, 5, 3, 1, fr); s.det(o + 13, 7, 3, 1, fr);
       s.det(o + 13, 6, 1, 1, fr); s.det(o + 15, 6, 1, 1, fr);
       s.det(o + 11, 6, 2, 1, fr);
-      // Pale glass in the lenses, so the rings read as spectacles and not a visor.
-      s.det(o + 9, 6, 1, 1, '#b9c6d8'); s.det(o + 14, 6, 1, 1, '#b9c6d8');
+      // Pale glass unless an eye colour is given, so the rings read as
+      // spectacles rather than a visor.
+      var lens = def.eyeColor || '#b9c6d8';
+      s.det(o + 9, 6, 1, 1, lens); s.det(o + 14, 6, 1, 1, lens);
     } else {
-      s.det(o + 10, 6, 1, 2, '#1f2430');
-      s.det(o + 13, 6, 1, 2, '#1f2430');
+      var iris = def.eyeColor || '#1f2430';
+      s.det(o + 10, 6, 1, 2, iris);
+      s.det(o + 13, 6, 1, 2, iris);
     }
 
     hairFront(s, o, hc, def.hairStyle);
@@ -486,6 +574,7 @@ window.PW = window.PW || {};
     if (def.belt) s.det(tx, HIP_Y, narrow, 1, def.belt);
 
     s.add(tx, TORSO_Y, narrow, TORSO_H, def.shirt);
+    shirtPattern(s, tx, TORSO_Y, narrow, TORSO_H, patternOf(def), patternColorOf(def));
 
     if (cuffed) {
       // Arms out in front, wrists banded.
@@ -508,13 +597,19 @@ window.PW = window.PW || {};
       s.add(o + 9, 6, 1, 4, bc);
     }
 
+    if (def.makeup && def.makeup !== 'none' && def.eyes !== 'shades') {
+      var smc = def.makeupColor || '#8a4a7a';
+      if (def.makeup === 'shadow' || def.makeup === 'both') s.det(o + 13, 4, 2, 1, smc);
+      if (def.makeup === 'liner' || def.makeup === 'both') s.det(o + 13, 5, 3, 1, smc);
+    }
+
     if (def.eyes === 'shades') s.add(o + 12, 5, 4, 3, '#181c24');
     else if (def.eyes === 'round') {
       s.det(o + 13, 5, 3, 1, '#2b3140');
       s.det(o + 13, 7, 3, 1, '#2b3140');
       s.det(o + 13, 6, 1, 1, '#2b3140');
-      s.det(o + 14, 6, 1, 1, '#1a1d24');
-    } else s.det(o + 14, 6, 1, 2, '#1f2430');
+      s.det(o + 14, 6, 1, 1, def.eyeColor || '#1a1d24');
+    } else s.det(o + 14, 6, 1, 2, def.eyeColor || '#1f2430');
 
     s.det(o + 11, 7, 1, 1, skin.shade); // ear
 
@@ -598,10 +693,352 @@ window.PW = window.PW || {};
 })(window.PW);
 </script>
 <script>
+/* ==== charedit.js ==== */
+/* The character editor, as a drop-in panel.
+
+   Both the standalone forge and the game's own "make your own" panel mount this,
+   so the field list, the state shape and the emitted source all live in one
+   place. Styles are injected once under prefixed class names, so a host page
+   only has to provide a container. */
+(function (PW) {
+  'use strict';
+
+  var C = {};
+  PW.CHAR = C;
+
+  C.SKINS = ['pale', 'peach', 'olive', 'tan', 'brown', 'deep'];
+  C.HAIRS = ['black', 'dark', 'brown', 'ginger', 'blonde', 'grey', 'white'];
+  C.HAIR_STYLES = ['buzz', 'crop', 'slick', 'swoop', 'pomp', 'rough', 'curls', 'afro', 'bun', 'long', 'bald'];
+  C.BEARDS = ['none', 'full', 'goatee', 'stubble'];
+  C.EYES = ['plain', 'round', 'shades'];
+  C.MAKEUP = ['none', 'shadow', 'liner', 'both'];
+  C.HATS = ['none', 'cap', 'beanie', 'cowboy', 'police'];
+  C.BUILDS = ['normal', 'heavy', 'lean'];
+  C.SLEEVES = ['long', 'short'];
+  C.PATTERNS = ['none', 'stripes', 'bands', 'check', 'dots'];
+  C.PROPS = ['none', 'briefcase', 'laptop', 'cup', 'phone', 'pills', 'keyring', 'cigar', 'derrick'];
+
+  var OPT_COLORS = ['tie', 'lapels', 'belt', 'backText'];
+
+  var GROUPS = [
+    ['Identity', [{ k: 'name', t: 'text' }]],
+    ['Body', [
+      { k: 'skin', t: 'select', opts: C.SKINS },
+      { k: 'build', t: 'select', opts: C.BUILDS }
+    ]],
+    ['Head', [
+      { k: 'hairStyle', t: 'select', opts: C.HAIR_STYLES },
+      { k: 'hair', t: 'select', opts: C.HAIRS },
+      { k: 'beardStyle', t: 'select', opts: C.BEARDS },
+      { k: 'beardColor', t: 'select', opts: C.HAIRS },
+      { k: 'hat', t: 'select', opts: C.HATS },
+      { k: 'hatColor', t: 'color' }
+    ]],
+    ['Eyes', [
+      { k: 'eyes', t: 'select', opts: C.EYES },
+      { k: 'eyeColor', t: 'optcolor' },
+      { k: 'makeup', t: 'select', opts: C.MAKEUP },
+      { k: 'makeupColor', t: 'color' }
+    ]],
+    ['Clothes', [
+      { k: 'shirt', t: 'color' },
+      { k: 'pattern', t: 'select', opts: C.PATTERNS },
+      { k: 'patternColor', t: 'color' },
+      { k: 'sleeves', t: 'select', opts: C.SLEEVES },
+      { k: 'pants', t: 'color' },
+      { k: 'shoes', t: 'color' }
+    ]],
+    ['Details', [
+      { k: 'tie', t: 'optcolor' },
+      { k: 'lapels', t: 'optcolor' },
+      { k: 'belt', t: 'optcolor' },
+      { k: 'backText', t: 'optcolor' },
+      { k: 'chain', t: 'bool' },
+      { k: 'badge', t: 'bool' }
+    ]],
+    ['Prop', [{ k: 'prop', t: 'select', opts: C.PROPS }]]
+  ];
+
+  var LABELS = {
+    name: 'Name', skin: 'Skin', build: 'Build', hairStyle: 'Hair', hair: 'Hair colour',
+    beardStyle: 'Beard', beardColor: 'Beard colour', hat: 'Hat', hatColor: 'Hat colour',
+    eyes: 'Eyes', eyeColor: 'Eye colour', makeup: 'Makeup', makeupColor: 'Makeup colour',
+    shirt: 'Shirt', pattern: 'Pattern', patternColor: 'Pattern colour', sleeves: 'Sleeves',
+    pants: 'Trousers', shoes: 'Shoes', tie: 'Tie', lapels: 'Lapels', belt: 'Belt',
+    backText: 'Back marks', chain: 'Chain', badge: 'Badge', prop: 'Prop'
+  };
+
+  C.defaults = function () {
+    return {
+      name: 'MY OFFICER', skin: 'olive', build: 'normal',
+      hairStyle: 'swoop', hair: 'brown', beardStyle: 'none', beardColor: 'brown',
+      hat: 'none', hatColor: '#2b3a4a',
+      eyes: 'plain', eyeColor: null, makeup: 'none', makeupColor: '#8a4a7a',
+      shirt: '#33436b', pattern: 'none', patternColor: '#5a6a8c', sleeves: 'long',
+      pants: '#232c42', shoes: '#141821',
+      tie: null, lapels: null, belt: '#141821', backText: null,
+      chain: false, badge: true, prop: 'none'
+    };
+  };
+
+  function slug(name) {
+    var v = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return v || 'character';
+  }
+
+  // Editor state -> the object the sprite renderer consumes.
+  C.toDef = function (S) {
+    var d = {
+      id: slug(S.name), name: String(S.name).toUpperCase(),
+      skin: S.skin, build: S.build, hairStyle: S.hairStyle,
+      eyes: S.eyes, shirt: S.shirt, sleeves: S.sleeves,
+      pants: S.pants, shoes: S.shoes
+    };
+    if (S.hairStyle !== 'bald') d.hair = S.hair;
+    if (S.beardStyle !== 'none') d.beard = { style: S.beardStyle, color: S.beardColor };
+    if (S.hat !== 'none') { d.hat = S.hat; d.hatColor = S.hatColor; }
+    if (S.eyeColor) d.eyeColor = S.eyeColor;
+    if (S.makeup && S.makeup !== 'none') { d.makeup = S.makeup; d.makeupColor = S.makeupColor; }
+    if (S.pattern && S.pattern !== 'none') { d.pattern = S.pattern; d.patternColor = S.patternColor; }
+    OPT_COLORS.forEach(function (k) { if (S[k]) d[k] = S[k]; });
+    if (S.chain) d.chain = true;
+    if (S.badge) d.badge = true;
+    if (S.prop !== 'none') d.prop = S.prop;
+    return d;
+  };
+
+  // ...and back again, tolerating the older `pinstripe` field.
+  C.fromDef = function (d) {
+    var S = C.defaults();
+    S.name = d.name || 'CHARACTER';
+    S.skin = d.skin || 'tan';
+    S.build = d.build || 'normal';
+    S.hairStyle = d.hairStyle || 'buzz';
+    S.hair = d.hair || 'black';
+    S.beardStyle = d.beard ? d.beard.style : 'none';
+    S.beardColor = (d.beard && d.beard.color) || 'brown';
+    S.hat = d.hat || 'none';
+    S.hatColor = d.hatColor || '#2b3a4a';
+    S.eyes = d.eyes || 'plain';
+    S.eyeColor = d.eyeColor || null;
+    S.makeup = d.makeup || 'none';
+    S.makeupColor = d.makeupColor || '#8a4a7a';
+    S.shirt = d.shirt || '#33436b';
+    S.pattern = d.pattern || (d.pinstripe ? 'stripes' : 'none');
+    S.patternColor = d.patternColor || d.pinstripe || '#5a6a8c';
+    S.sleeves = d.sleeves || 'long';
+    S.pants = d.pants || '#232c42';
+    S.shoes = d.shoes || '#141821';
+    OPT_COLORS.forEach(function (k) { S[k] = d[k] || null; });
+    S.chain = !!d.chain;
+    S.badge = !!d.badge;
+    S.prop = d.prop || 'none';
+    return S;
+  };
+
+  function q(v) { return typeof v === 'string' ? "'" + v + "'" : String(v); }
+
+  C.source = function (d) {
+    var L = [];
+    L.push('  id: ' + q(d.id) + ', name: ' + q(d.name) + ',');
+    var body = ['skin: ' + q(d.skin), 'build: ' + q(d.build)];
+    if (d.hair) body.push('hair: ' + q(d.hair));
+    body.push('hairStyle: ' + q(d.hairStyle));
+    L.push('  ' + body.join(', ') + ',');
+    if (d.beard) L.push('  beard: { style: ' + q(d.beard.style) + ', color: ' + q(d.beard.color) + ' },');
+    if (d.hat) L.push('  hat: ' + q(d.hat) + ', hatColor: ' + q(d.hatColor) + ',');
+    var eye = ['eyes: ' + q(d.eyes)];
+    if (d.eyeColor) eye.push('eyeColor: ' + q(d.eyeColor));
+    if (d.makeup) eye.push('makeup: ' + q(d.makeup) + ', makeupColor: ' + q(d.makeupColor));
+    L.push('  ' + eye.join(', ') + ',');
+    var wear = ['shirt: ' + q(d.shirt), 'sleeves: ' + q(d.sleeves)];
+    if (d.pattern) wear.push('pattern: ' + q(d.pattern) + ', patternColor: ' + q(d.patternColor));
+    OPT_COLORS.forEach(function (k) { if (d[k]) wear.push(k + ': ' + q(d[k])); });
+    if (d.chain) wear.push('chain: true');
+    if (d.badge) wear.push('badge: true');
+    L.push('  ' + wear.join(', ') + ',');
+    var tail = ['pants: ' + q(d.pants), 'shoes: ' + q(d.shoes)];
+    if (d.prop) tail.push('prop: ' + q(d.prop));
+    L.push('  ' + tail.join(', '));
+    return '{\n' + L.join('\n') + '\n},';
+  };
+
+  /* Normalise a JS object literal into JSON and parse it, rather than
+     evaluating whatever was pasted in. Throws on anything malformed. */
+  C.parse = function (text) {
+    var raw = String(text).trim().replace(/,\s*$/, '');
+    var json = raw
+      .replace(/'/g, '"')
+      .replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":')
+      .replace(/,(\s*[}\]])/g, '$1');
+    var d = JSON.parse(json);
+    if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('not an object');
+    return d;
+  };
+
+  var CSS = [
+    '.pwed-group{border-top:1px solid var(--pwed-edge,#232d3c);margin:0;padding:12px 0 0}',
+    '.pwed-group:first-child{border-top:0;padding-top:0}',
+    '.pwed-legend{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--pwed-label,#c9ced8);padding:0 0 8px}',
+    '.pwed-field{display:grid;grid-template-columns:92px 1fr;align-items:center;gap:8px;margin-bottom:6px}',
+    '.pwed-field>label{font-size:11px;color:var(--pwed-dim,#78849a)}',
+    '.pwed-pair{display:flex;align-items:center;gap:6px}',
+    '.pwed input[type=text],.pwed select{width:100%;font:inherit;font-size:12px;color:var(--pwed-text,#dfe6f2);background:var(--pwed-sunk,#0b0f16);border:1px solid var(--pwed-edge,#232d3c);border-radius:3px;padding:4px 6px}',
+    '.pwed input[type=color]{width:34px;height:26px;padding:0;background:var(--pwed-sunk,#0b0f16);border:1px solid var(--pwed-edge,#232d3c);border-radius:3px;cursor:pointer}',
+    '.pwed input[type=checkbox]{accent-color:var(--pwed-accent,#f5b942);width:15px;height:15px}',
+    '.pwed-hex{font-size:11px;color:var(--pwed-dim,#78849a);font-variant-numeric:tabular-nums}'
+  ].join('\n');
+
+  var styled = false;
+  function injectStyle() {
+    if (styled) return;
+    styled = true;
+    var el = document.createElement('style');
+    el.textContent = CSS;
+    document.head.appendChild(el);
+  }
+
+  /* Mount the control panel. Returns { get, set } — `get` yields a character
+     def, `set` takes one. `onChange` fires on every edit with the current def. */
+  PW.createEditor = function (mount, opts) {
+    injectStyle();
+    opts = opts || {};
+    var S = opts.value ? C.fromDef(opts.value) : C.defaults();
+    var inputs = {};
+    mount.classList.add('pwed');
+    mount.textContent = '';
+
+    function emit() { if (opts.onChange) opts.onChange(C.toDef(S)); }
+
+    function row(labelText, control) {
+      var d = document.createElement('div');
+      d.className = 'pwed-field';
+      var l = document.createElement('label');
+      l.textContent = labelText;
+      d.appendChild(l);
+      d.appendChild(control);
+      return d;
+    }
+
+    GROUPS.forEach(function (grp) {
+      var fs = document.createElement('div');
+      fs.className = 'pwed-group';
+      var lg = document.createElement('div');
+      lg.className = 'pwed-legend';
+      lg.textContent = grp[0];
+      fs.appendChild(lg);
+
+      grp[1].forEach(function (f) {
+        var control, el;
+        if (f.t === 'text') {
+          el = document.createElement('input');
+          el.type = 'text';
+          el.value = S[f.k];
+          el.addEventListener('input', function () { S[f.k] = el.value; emit(); });
+          control = el;
+        } else if (f.t === 'select') {
+          el = document.createElement('select');
+          f.opts.forEach(function (o) {
+            var op = document.createElement('option');
+            op.value = o; op.textContent = o;
+            el.appendChild(op);
+          });
+          el.value = S[f.k];
+          el.addEventListener('change', function () { S[f.k] = el.value; emit(); });
+          control = el;
+        } else if (f.t === 'color') {
+          control = document.createElement('div');
+          control.className = 'pwed-pair';
+          el = document.createElement('input');
+          el.type = 'color';
+          el.value = S[f.k];
+          var hex = document.createElement('span');
+          hex.className = 'pwed-hex';
+          hex.textContent = S[f.k];
+          el.addEventListener('input', function () {
+            S[f.k] = el.value; hex.textContent = el.value; emit();
+          });
+          control.appendChild(el);
+          control.appendChild(hex);
+          el.hexLabel = hex;
+        } else if (f.t === 'optcolor') {
+          control = document.createElement('div');
+          control.className = 'pwed-pair';
+          var on = document.createElement('input');
+          on.type = 'checkbox';
+          on.checked = !!S[f.k];
+          el = document.createElement('input');
+          el.type = 'color';
+          el.value = S[f.k] || '#8a94a6';
+          el.disabled = !on.checked;
+          var hx = document.createElement('span');
+          hx.className = 'pwed-hex';
+          hx.textContent = on.checked ? S[f.k] : 'off';
+          var sync = function () {
+            el.disabled = !on.checked;
+            S[f.k] = on.checked ? el.value : null;
+            hx.textContent = on.checked ? el.value : 'off';
+            emit();
+          };
+          on.addEventListener('change', sync);
+          el.addEventListener('input', sync);
+          control.appendChild(on);
+          control.appendChild(el);
+          control.appendChild(hx);
+          el.toggle = on;
+          el.hexLabel = hx;
+        } else {
+          el = document.createElement('input');
+          el.type = 'checkbox';
+          el.checked = !!S[f.k];
+          el.addEventListener('change', function () { S[f.k] = el.checked; emit(); });
+          control = el;
+        }
+        inputs[f.k] = el;
+        fs.appendChild(row(LABELS[f.k] || f.k, control));
+      });
+
+      mount.appendChild(fs);
+    });
+
+    function refresh() {
+      Object.keys(inputs).forEach(function (k) {
+        var el = inputs[k];
+        if (el.type === 'color') {
+          var v = S[k];
+          if (el.toggle) {
+            el.toggle.checked = !!v;
+            el.disabled = !v;
+            if (v) el.value = v;
+            el.hexLabel.textContent = v || 'off';
+          } else {
+            el.value = v;
+            el.hexLabel.textContent = v;
+          }
+        } else if (el.type === 'checkbox') {
+          el.checked = !!S[k];
+        } else {
+          el.value = S[k];
+        }
+      });
+    }
+
+    emit();
+
+    return {
+      get: function () { return C.toDef(S); },
+      state: function () { return S; },
+      set: function (def) { S = C.fromDef(def); refresh(); emit(); },
+      replaceState: function (next) { S = next; refresh(); emit(); }
+    };
+  };
+})(window.PW);
+</script>
+<script>
 /* ==== roster.js ==== */
 /* Who is in the game.
 
-   The OFFICER is who you steer, and is never cuffed.
+   PLAYERS are pickable before a shift and are never cuffed.
    EXECS are the pickups. Each one is baked twice: loose (holding whatever
    prop they carry) for when they're standing in the lot, and cuffed for once
    they've joined the line behind you. Their clothes stay the same either way,
@@ -612,23 +1049,42 @@ window.PW = window.PW || {};
   /* One officer, no picker: plain municipal police so the role reads at a
      glance - navy uniform, capped shield, duty belt. Skin tone, build and
      colours are all single-value changes here. */
-  PW.OFFICER = {
-    id: 'officer',
-    name: 'OFFICER',
-    skin: 'tan',
-    build: 'normal',
-    hair: 'dark',
-    hairStyle: 'buzz',
-    hat: 'police',
-    hatColor: '#1f2942',
-    shirt: '#33436b',
-    sleeves: 'long',
-    pants: '#232c42',
-    shoes: '#141821',
-    belt: '#141821',
-    badge: true,
-    eyes: 'plain'
-  };
+  /* Four people who might plausibly be serving a warrant. Each leans on a
+     different silhouette cue so they stay apart at 24px: cap, swoop, wide hat,
+     shades. None is ever cuffed. */
+  PW.PLAYERS = [
+    {
+      id: 'officer', name: 'OFFICER',
+      skin: 'tan', build: 'normal', hair: 'dark', hairStyle: 'buzz',
+      hat: 'police', hatColor: '#1f2942',
+      shirt: '#33436b', sleeves: 'long', belt: '#141821', badge: true,
+      pants: '#232c42', shoes: '#141821', eyes: 'plain'
+    },
+    {
+      id: 'detective', name: 'DETECTIVE',
+      skin: 'peach', build: 'normal', hair: 'brown', hairStyle: 'swoop',
+      shirt: '#8a7550', lapels: '#6d5b3c', sleeves: 'long', tie: '#7a2f3a',
+      belt: '#3b2f22', badge: true,
+      pants: '#4a4034', shoes: '#2a231b',
+      eyes: 'plain', eyeColor: '#3f6b52', makeup: 'liner', makeupColor: '#5c3550'
+    },
+    {
+      id: 'marshal', name: 'MARSHAL',
+      skin: 'brown', build: 'heavy', hair: 'black', hairStyle: 'crop',
+      hat: 'cowboy', hatColor: '#4a3a28',
+      shirt: '#5d6b52', sleeves: 'long', belt: '#2d2318', badge: true,
+      pants: '#3b4235', shoes: '#2a231b', eyes: 'plain'
+    },
+    {
+      id: 'agent', name: 'AGENT',
+      skin: 'pale', build: 'lean', hair: 'black', hairStyle: 'slick',
+      shirt: '#1f242e', lapels: '#141821', sleeves: 'long', tie: '#2b3550',
+      pants: '#1f242e', shoes: '#141821', eyes: 'shades'
+    }
+  ];
+
+  // Kept as a name for the default, for anything that wants just the one.
+  PW.OFFICER = PW.PLAYERS[0];
 
   PW.EXECS = [
     {
@@ -654,7 +1110,7 @@ window.PW = window.PW || {};
     {
       id: 'equity', name: 'PE VULTURE',
       skin: 'pale', build: 'lean', hair: 'grey', hairStyle: 'slick',
-      shirt: '#2d323d', pinstripe: '#454b59', sleeves: 'long', tie: '#8e2b3a',
+      shirt: '#2d323d', pattern: 'stripes', patternColor: '#454b59', sleeves: 'long', tie: '#8e2b3a',
       pants: '#2d323d', shoes: '#181c24', eyes: 'plain', prop: 'briefcase'
     },
     {
@@ -696,10 +1152,10 @@ window.PW = window.PW || {};
     }
   ];
 
-  PW.art = { officer: null, execs: [] };
+  PW.art = { players: [], execs: [] };
 
   PW.bakeAll = function () {
-    PW.art.officer = PW.bake(PW.OFFICER, { cuffed: false });
+    PW.art.players = PW.PLAYERS.map(function (d) { return PW.bake(d, { cuffed: false }); });
     PW.art.execs = PW.EXECS.map(function (d) {
       return {
         loose: PW.bake(d, { cuffed: false }).front,
@@ -713,111 +1169,7 @@ window.PW = window.PW || {};
 (function () {
   'use strict';
 
-  var SKINS = Object.keys(PW.SKIN);
-  var HAIRS = Object.keys(PW.HAIR);
-  var PROPS = ['briefcase', 'laptop', 'cup', 'phone', 'pills', 'keyring', 'cigar', 'derrick'];
-  var HATS = ['cap', 'beanie', 'cowboy', 'police'];
-
-  /* One declaration drives the controls, the state and the randomiser, so a new
-     field is a single line rather than three places to keep in sync. */
-  var GROUPS = [
-    ['Identity', [{ k: 'name', t: 'text' }]],
-    ['Body', [
-      { k: 'skin', t: 'select', opts: SKINS },
-      { k: 'build', t: 'select', opts: ['normal', 'heavy', 'lean'] }
-    ]],
-    ['Head', [
-      { k: 'hairStyle', t: 'select', opts: ['buzz', 'slick', 'rough', 'long', 'bald'] },
-      { k: 'hair', t: 'select', opts: HAIRS },
-      { k: 'beardStyle', t: 'select', opts: ['none', 'full', 'goatee', 'stubble'] },
-      { k: 'beardColor', t: 'select', opts: HAIRS },
-      { k: 'eyes', t: 'select', opts: ['plain', 'round', 'shades'] },
-      { k: 'hat', t: 'select', opts: ['none'].concat(HATS) },
-      { k: 'hatColor', t: 'color' }
-    ]],
-    ['Clothes', [
-      { k: 'shirt', t: 'color' },
-      { k: 'sleeves', t: 'select', opts: ['long', 'short'] },
-      { k: 'pants', t: 'color' },
-      { k: 'shoes', t: 'color' }
-    ]],
-    ['Details', [
-      { k: 'tie', t: 'optcolor' },
-      { k: 'lapels', t: 'optcolor' },
-      { k: 'pinstripe', t: 'optcolor' },
-      { k: 'belt', t: 'optcolor' },
-      { k: 'backText', t: 'optcolor' },
-      { k: 'chain', t: 'bool' },
-      { k: 'badge', t: 'bool' }
-    ]],
-    ['Prop', [{ k: 'prop', t: 'select', opts: ['none'].concat(PROPS) }]]
-  ];
-
-  var LABELS = {
-    name: 'Name', skin: 'Skin', build: 'Build', hairStyle: 'Hair', hair: 'Hair colour',
-    beardStyle: 'Beard', beardColor: 'Beard colour', eyes: 'Eyes', hat: 'Hat',
-    hatColor: 'Hat colour', shirt: 'Shirt', sleeves: 'Sleeves', pants: 'Trousers',
-    shoes: 'Shoes', tie: 'Tie', lapels: 'Lapels', pinstripe: 'Pinstripe', belt: 'Belt',
-    backText: 'Back marks', chain: 'Chain', badge: 'Badge', prop: 'Prop'
-  };
-
-  var S = {
-    name: 'PORT MAGNATE', skin: 'olive', build: 'heavy',
-    hairStyle: 'slick', hair: 'grey', beardStyle: 'none', beardColor: 'grey',
-    eyes: 'plain', hat: 'cap', hatColor: '#2b3a4a',
-    shirt: '#3d5a6c', sleeves: 'long', pants: '#2b3340', shoes: '#181c24',
-    tie: null, lapels: '#2c4351', pinstripe: null, belt: null, backText: null,
-    chain: true, badge: false, prop: 'briefcase'
-  };
-
-  function slug(name) {
-    var s = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    return s || 'character';
-  }
-
-  // Editor state -> the object the sprite renderer actually consumes.
-  function toDef() {
-    var d = {
-      id: slug(S.name), name: String(S.name).toUpperCase(),
-      skin: S.skin, build: S.build, hairStyle: S.hairStyle,
-      eyes: S.eyes, shirt: S.shirt, sleeves: S.sleeves,
-      pants: S.pants, shoes: S.shoes
-    };
-    if (S.hairStyle !== 'bald') d.hair = S.hair;
-    if (S.beardStyle !== 'none') d.beard = { style: S.beardStyle, color: S.beardColor };
-    if (S.hat !== 'none') { d.hat = S.hat; d.hatColor = S.hatColor; }
-    ['tie', 'lapels', 'pinstripe', 'belt', 'backText'].forEach(function (k) { if (S[k]) d[k] = S[k]; });
-    if (S.chain) d.chain = true;
-    if (S.badge) d.badge = true;
-    if (S.prop !== 'none') d.prop = S.prop;
-    return d;
-  }
-
-  function q(v) { return typeof v === 'string' ? "'" + v + "'" : String(v); }
-
-  function toSource(d) {
-    var L = [];
-    L.push('  id: ' + q(d.id) + ", name: " + q(d.name) + ',');
-    var body = ['skin: ' + q(d.skin), 'build: ' + q(d.build)];
-    if (d.hair) body.push('hair: ' + q(d.hair));
-    body.push('hairStyle: ' + q(d.hairStyle));
-    L.push('  ' + body.join(', ') + ',');
-    if (d.beard) L.push('  beard: { style: ' + q(d.beard.style) + ', color: ' + q(d.beard.color) + ' },');
-    if (d.hat) L.push('  hat: ' + q(d.hat) + ', hatColor: ' + q(d.hatColor) + ',');
-    var wear = ['shirt: ' + q(d.shirt), 'sleeves: ' + q(d.sleeves)];
-    ['tie', 'lapels', 'pinstripe', 'belt', 'backText'].forEach(function (k) {
-      if (d[k]) wear.push(k + ': ' + q(d[k]));
-    });
-    if (d.chain) wear.push('chain: true');
-    if (d.badge) wear.push('badge: true');
-    L.push('  ' + wear.join(', ') + ',');
-    var tail = ['pants: ' + q(d.pants), 'shoes: ' + q(d.shoes), 'eyes: ' + q(d.eyes)];
-    if (d.prop) tail.push('prop: ' + q(d.prop));
-    L.push('  ' + tail.join(', '));
-    return '{\n' + L.join('\n') + '\n},';
-  }
-
-  // ---------------------------------------------------------------- render ---
+  var editor = null;
 
   function tile(img, zoom, label) {
     var wrap = document.createElement('div');
@@ -830,18 +1182,16 @@ window.PW = window.PW || {};
     c.drawImage(img, 0, 0, cv.width, cv.height);
     wrap.appendChild(cv);
     if (label) {
-      var s = document.createElement('span');
-      s.textContent = label;
-      wrap.appendChild(s);
+      var sp = document.createElement('span');
+      sp.textContent = label;
+      wrap.appendChild(sp);
     }
     return wrap;
   }
 
-  function paint() {
-    var def = toDef();
+  function paint(def) {
     var loose = PW.bake(def, { cuffed: false });
     var cuffed = PW.bake(def, { cuffed: true });
-
     var a = document.getElementById('loose');
     var b = document.getElementById('cuffed');
     a.textContent = '';
@@ -856,13 +1206,12 @@ window.PW = window.PW || {};
     PW.EXECS.concat([def]).forEach(function (d, i) {
       var fig = document.createElement('figure');
       if (i === PW.EXECS.length) fig.className = 'mine';
-      var art = PW.bake(d, { cuffed: false });
       var cv = document.createElement('canvas');
       cv.width = PW.SPRITE * 3;
       cv.height = PW.SPRITE * 3;
       var c = cv.getContext('2d');
       c.imageSmoothingEnabled = false;
-      c.drawImage(art.front, 0, 0, cv.width, cv.height);
+      c.drawImage(PW.bake(d, { cuffed: false }).front, 0, 0, cv.width, cv.height);
       var cap = document.createElement('figcaption');
       cap.textContent = d.name;
       fig.appendChild(cv);
@@ -870,217 +1219,76 @@ window.PW = window.PW || {};
       strip.appendChild(fig);
     });
 
-    document.getElementById('out').textContent = toSource(def);
+    document.getElementById('out').textContent = PW.CHAR.source(def);
   }
 
-  // -------------------------------------------------------------- controls ---
-
-  var form = document.getElementById('controls');
-
-  function row(label, control) {
-    var d = document.createElement('div');
-    d.className = 'field';
-    var l = document.createElement('label');
-    l.textContent = label;
-    d.appendChild(l);
-    d.appendChild(control);
-    return d;
-  }
-
-  var inputs = {};
-
-  GROUPS.forEach(function (grp) {
-    var fs = document.createElement('fieldset');
-    var lg = document.createElement('legend');
-    lg.textContent = grp[0];
-    fs.appendChild(lg);
-
-    grp[1].forEach(function (f) {
-      var control, el;
-      if (f.t === 'text') {
-        el = document.createElement('input');
-        el.type = 'text';
-        el.value = S[f.k];
-        el.addEventListener('input', function () { S[f.k] = el.value; paint(); });
-        control = el;
-      } else if (f.t === 'select') {
-        el = document.createElement('select');
-        f.opts.forEach(function (o) {
-          var op = document.createElement('option');
-          op.value = o; op.textContent = o;
-          el.appendChild(op);
-        });
-        el.value = S[f.k];
-        el.addEventListener('change', function () { S[f.k] = el.value; paint(); });
-        control = el;
-      } else if (f.t === 'color') {
-        control = document.createElement('div');
-        control.className = 'pair';
-        el = document.createElement('input');
-        el.type = 'color';
-        el.value = S[f.k];
-        var hex = document.createElement('span');
-        hex.className = 'hex';
-        hex.textContent = S[f.k];
-        el.addEventListener('input', function () { S[f.k] = el.value; hex.textContent = el.value; paint(); });
-        control.appendChild(el);
-        control.appendChild(hex);
-        el.hexLabel = hex;
-      } else if (f.t === 'optcolor') {
-        control = document.createElement('div');
-        control.className = 'pair';
-        var on = document.createElement('input');
-        on.type = 'checkbox';
-        on.checked = !!S[f.k];
-        el = document.createElement('input');
-        el.type = 'color';
-        el.value = S[f.k] || '#8a94a6';
-        el.disabled = !on.checked;
-        var hx = document.createElement('span');
-        hx.className = 'hex';
-        hx.textContent = on.checked ? S[f.k] : 'off';
-        function sync() {
-          el.disabled = !on.checked;
-          S[f.k] = on.checked ? el.value : null;
-          hx.textContent = on.checked ? el.value : 'off';
-          paint();
-        }
-        on.addEventListener('change', sync);
-        el.addEventListener('input', sync);
-        control.appendChild(on);
-        control.appendChild(el);
-        control.appendChild(hx);
-        el.toggle = on;
-        el.hexLabel = hx;
-      } else {
-        el = document.createElement('input');
-        el.type = 'checkbox';
-        el.checked = !!S[f.k];
-        el.addEventListener('change', function () { S[f.k] = el.checked; paint(); });
-        control = el;
-      }
-      inputs[f.k] = el;
-      fs.appendChild(row(LABELS[f.k] || f.k, control));
-    });
-
-    form.appendChild(fs);
-  });
-
-  // Push state back into the widgets after a load or randomise.
-  function syncControls() {
-    Object.keys(inputs).forEach(function (k) {
-      var el = inputs[k];
-      if (el.type === 'color') {
-        var v = S[k];
-        if (el.toggle) {
-          el.toggle.checked = !!v;
-          el.disabled = !v;
-          if (v) el.value = v;
-          el.hexLabel.textContent = v || 'off';
-        } else {
-          el.value = v;
-          el.hexLabel.textContent = v;
-        }
-      } else if (el.type === 'checkbox') {
-        el.checked = !!S[k];
-      } else {
-        el.value = S[k];
-      }
-    });
-    paint();
-  }
-
-  // Game def -> editor state, the inverse of toDef.
-  function adopt(d) {
-    S.name = d.name || 'CHARACTER';
-    S.skin = d.skin || 'tan';
-    S.build = d.build || 'normal';
-    S.hairStyle = d.hairStyle || 'buzz';
-    S.hair = d.hair || 'black';
-    S.beardStyle = d.beard ? d.beard.style : 'none';
-    S.beardColor = d.beard ? d.beard.color : 'brown';
-    S.eyes = d.eyes || 'plain';
-    S.hat = d.hat || 'none';
-    S.hatColor = d.hatColor || '#2b3a4a';
-    S.shirt = d.shirt || '#3d5a6c';
-    S.sleeves = d.sleeves || 'long';
-    S.pants = d.pants || '#2b3340';
-    S.shoes = d.shoes || '#181c24';
-    ['tie', 'lapels', 'pinstripe', 'belt', 'backText'].forEach(function (k) { S[k] = d[k] || null; });
-    S.chain = !!d.chain;
-    S.badge = !!d.badge;
-    S.prop = d.prop || 'none';
-    syncControls();
-  }
+  editor = PW.createEditor(document.getElementById('controls'), { onChange: paint });
 
   // ----------------------------------------------------------------- load ---
 
+  var PRESETS = PW.PLAYERS.concat(PW.EXECS);
   var preset = document.getElementById('preset');
-  [{ label: 'OFFICER (player)', def: PW.OFFICER }].concat(
-    PW.EXECS.map(function (d) { return { label: d.name, def: d }; })
-  ).forEach(function (item, i) {
+  PRESETS.forEach(function (d, i) {
     var op = document.createElement('option');
     op.value = String(i);
-    op.textContent = item.label;
+    op.textContent = d.name + (i < PW.PLAYERS.length ? ' (player)' : '');
     preset.appendChild(op);
   });
-  var PRESETS = [PW.OFFICER].concat(PW.EXECS);
 
   document.getElementById('loadPreset').addEventListener('click', function () {
-    adopt(PRESETS[Number(preset.value)]);
+    editor.set(PRESETS[Number(preset.value)]);
   });
 
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-  function hue() {
-    var h = Math.floor(Math.random() * 360), s = 25 + Math.random() * 45, l = 22 + Math.random() * 45;
-    return hslHex(h, s, l);
-  }
-  function hslHex(h, s, l) {
-    s /= 100; l /= 100;
+  function hslHex(h, sat, lum) {
+    sat /= 100; lum /= 100;
     var k = function (n) { return (n + h / 30) % 12; };
-    var a = s * Math.min(l, 1 - l);
-    var f = function (n) { return l - a * Math.max(-1, Math.min(Math.min(k(n) - 3, 9 - k(n)), 1)); };
+    var a = sat * Math.min(lum, 1 - lum);
+    var f = function (n) { return lum - a * Math.max(-1, Math.min(Math.min(k(n) - 3, 9 - k(n)), 1)); };
     var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
     return '#' + hx(f(0)) + hx(f(8)) + hx(f(4));
   }
+  function hue() { return hslHex(Math.floor(Math.random() * 360), 25 + Math.random() * 45, 22 + Math.random() * 45); }
 
   document.getElementById('random').addEventListener('click', function () {
-    S.skin = pick(SKINS);
-    S.build = pick(['normal', 'heavy', 'lean']);
-    S.hairStyle = pick(['buzz', 'slick', 'rough', 'long', 'bald']);
-    S.hair = pick(HAIRS);
+    var C = PW.CHAR;
+    var S = C.defaults();
+    S.name = 'DRAFT';
+    S.skin = pick(C.SKINS);
+    S.build = pick(C.BUILDS);
+    S.hairStyle = pick(C.HAIR_STYLES);
+    S.hair = pick(C.HAIRS);
     S.beardStyle = pick(['none', 'none', 'full', 'goatee', 'stubble']);
     S.beardColor = S.hair;
     S.eyes = pick(['plain', 'plain', 'round', 'shades']);
-    S.hat = pick(['none', 'none'].concat(HATS));
+    S.eyeColor = Math.random() < 0.4 ? hue() : null;
+    S.makeup = pick(['none', 'none', 'shadow', 'liner', 'both']);
+    S.makeupColor = hue();
+    S.hat = pick(['none', 'none'].concat(C.HATS.slice(1)));
     S.hatColor = hue();
     S.shirt = hue();
+    S.pattern = pick(['none', 'none', 'stripes', 'bands', 'check', 'dots']);
+    S.patternColor = hue();
     S.sleeves = pick(['long', 'long', 'short']);
     S.pants = hue();
     S.shoes = '#181c24';
     S.tie = Math.random() < 0.3 ? hue() : null;
     S.lapels = Math.random() < 0.3 ? hue() : null;
-    S.pinstripe = Math.random() < 0.15 ? hue() : null;
-    S.belt = Math.random() < 0.2 ? '#141821' : null;
+    S.belt = Math.random() < 0.3 ? '#141821' : null;
     S.backText = null;
     S.chain = Math.random() < 0.25;
-    S.badge = Math.random() < 0.15;
-    S.prop = pick(['none'].concat(PROPS));
-    syncControls();
+    S.badge = Math.random() < 0.2;
+    S.prop = pick(C.PROPS);
+    editor.replaceState(S);
   });
 
   document.getElementById('loadPaste').addEventListener('click', function () {
     var msg = document.getElementById('pastemsg');
-    var raw = document.getElementById('paste').value.trim().replace(/,\s*$/, '');
-    if (!raw) { msg.className = 'msg bad'; msg.textContent = 'Nothing to load.'; return; }
+    var raw = document.getElementById('paste').value;
+    if (!raw.trim()) { msg.className = 'msg bad'; msg.textContent = 'Nothing to load.'; return; }
     try {
-      // Normalise the JS object literal into JSON rather than evaluating it.
-      var json = raw
-        .replace(/'/g, '"')
-        .replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":')
-        .replace(/,(\s*[}\]])/g, '$1');
-      var d = JSON.parse(json);
-      adopt(d);
+      var d = PW.CHAR.parse(raw);
+      editor.set(d);
       msg.className = 'msg good';
       msg.textContent = 'Loaded ' + (d.name || d.id || 'character') + '.';
     } catch (e) {
@@ -1092,9 +1300,11 @@ window.PW = window.PW || {};
   document.getElementById('copy').addEventListener('click', function () {
     var msg = document.getElementById('copymsg');
     var text = document.getElementById('out').textContent;
-    var done = function () { msg.className = 'msg good'; msg.textContent = 'Copied.'; };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, function () {
+      navigator.clipboard.writeText(text).then(function () {
+        msg.className = 'msg good';
+        msg.textContent = 'Copied.';
+      }, function () {
         msg.className = 'msg bad';
         msg.textContent = 'Clipboard blocked - select the text above instead.';
       });
@@ -1103,7 +1313,5 @@ window.PW = window.PW || {};
       msg.textContent = 'Clipboard unavailable - select the text above instead.';
     }
   });
-
-  paint();
 })();
 </script>
