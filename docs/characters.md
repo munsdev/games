@@ -12,7 +12,7 @@ Required: `id`, `name`, `skin`, `shirt`, `pants`, `shoes`. Everything else optio
 | --- | --- |
 | `id` | lowercase slug, unique |
 | `name` | uppercase, max 18 chars |
-| `skin` | `pale` `peach` `olive` `tan` `brown` `deep` |
+| `skin` | `porcelain` `pale` `rose` `peach` `amber` `olive` `tan` `brown` `umber` `deep` `ebony` (light to dark) |
 | `build` | `normal` `heavy` `lean` |
 | `face` | `square` `round` `tapered` `slim` `broad` |
 
@@ -33,14 +33,19 @@ Required: `id`, `name`, `skin`, `shirt`, `pants`, `shoes`. Everything else optio
 | `brows` | `thin` `thick` `arched` `angled` |
 | `browColor` | hex — defaults to the hair colour |
 | `eyeColor` | hex — iris colour |
-| `makeup` | `shadow` (lid), `liner` (under-eye and wing), `full` (both) |
-| `makeupColor` | hex — the upper/lid colour |
-| `makeupColor2` | hex — the lower/liner colour; defaults to `makeupColor` |
+| `makeup` | array of ring edges: `'top'` `'bottom'` `'outer'` `'inner'` |
+| `makeupColor` | hex — the ring colour |
+| `makeupColor2` | hex — overrides the lower edge only; defaults to `makeupColor` |
 | `glasses` | `round` `square` `halfRim` `shades` `roundShades` `aviator` |
 | `glassesColor` | hex — frames |
 | `lensColor` | hex — tint, on the three sunglasses kinds |
 
 `shades`, `roundShades` and `aviator` are opaque: they hide the eyes and any makeup.
+
+Each eye sits at the centre of a 3x4 cell, and `makeup` switches on the edges of
+that cell one at a time. All four gives a closed ring, which is what reads as
+tired or bruised; `['top']` alone is eyeshadow, `['bottom']` alone is a shadow
+under the eye.
 
 ### Clothes
 
@@ -85,6 +90,7 @@ Emit only this, one object per character, comma-separated. No prose.
   skin: 'olive', build: 'heavy', face: 'broad', hair: 'grey', hairStyle: 'slick',
   hat: 'cap', hatColor: '#2b3a4a',
   brows: 'thick', glasses: 'square',
+  makeup: ['bottom'], makeupColor: '#5a4048',
   shirt: '#3d5a6c', sleeves: 'long', pattern: 'stripes', patternColor: '#2c4351',
   lapels: '#2c4351', chain: true,
   pants: '#2b3340', shoes: '#181c24', prop: 'briefcase'

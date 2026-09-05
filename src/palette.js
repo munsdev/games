@@ -24,14 +24,19 @@ window.PW = window.PW || {};
     cuffShade: '#8f97a5'
   };
 
-  // Six skin tones, each with a shading tone for jaw/mouth lines.
+  // Ordered light to dark, so a roster can be spread across the range.
   PW.SKIN = {
-    pale:  { base: '#f0d0b4', shade: '#d3ab8c' },
-    peach: { base: '#e2b189', shade: '#c08e69' },
-    olive: { base: '#c99a63', shade: '#a67a47' },
-    tan:   { base: '#b07a45', shade: '#8d5c30' },
-    brown: { base: '#7e4a26', shade: '#5f3419' },
-    deep:  { base: '#523020', shade: '#3a2015' }
+    porcelain: { base: '#f7e2d0', shade: '#d9bfa8' },
+    pale:      { base: '#f0d0b4', shade: '#d3ab8c' },
+    rose:      { base: '#efc3ae', shade: '#cf9d85' },
+    peach:     { base: '#e2b189', shade: '#c08e69' },
+    amber:     { base: '#d9a45f', shade: '#b5813f' },
+    olive:     { base: '#c99a63', shade: '#a67a47' },
+    tan:       { base: '#b07a45', shade: '#8d5c30' },
+    brown:     { base: '#7e4a26', shade: '#5f3419' },
+    umber:     { base: '#6a3a1f', shade: '#4d2814' },
+    deep:      { base: '#523020', shade: '#3a2015' },
+    ebony:     { base: '#3d2418', shade: '#2a1810' }
   };
 
   // Multiply a hex colour toward black, for seams and shading.

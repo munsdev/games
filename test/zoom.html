@@ -20,9 +20,10 @@ function band(title,items,facings){
   });
   y+=S*Z+26;
 }
-band('AFRO', [{label:'afro',def:base({hairStyle:'afro'})}], ['front','side','back']);
-band('MAKEUP', ['none','shadow','liner','full'].map(function(m){
-  return {label:m,def:base({makeup:m,makeupColor:'#c06a9a',makeupColor2:'#4a1f38'})};}));
-band('GLASSES', ['round','square','halfRim','aviator'].map(function(g){
-  return {label:g,def:base({glasses:g})};}));
+band('GLASSES  front / side', PW.CHAR.GLASSES.slice(1).map(function(g){
+  return {label:g,def:base({glasses:g})};}), ['front','side']);
+band('EYE RING  front / side', [
+  {l:'top',m:['top']},{l:'bottom',m:['bottom']},{l:'outer',m:['outer']},
+  {l:'inner',m:['inner']},{l:'tired',m:['top','bottom','outer','inner']}
+].map(function(x){return {label:x.l,def:base({makeup:x.m,makeupColor:'#6a4258'})};}), ['front','side']);
 </script></body></html>

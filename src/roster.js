@@ -29,7 +29,7 @@
       shirt: '#8a7550', lapels: '#6d5b3c', sleeves: 'long', tie: '#7a2f3a',
       belt: '#3b2f22', badge: true,
       pants: '#4a4034', shoes: '#2a231b',
-      eyeColor: '#3f6b52', makeup: 'full', makeupColor: '#6b4a72', makeupColor2: '#3d2a40'
+      eyeColor: '#3f6b52', makeup: ['top', 'bottom', 'outer'], makeupColor: '#6b4a72', makeupColor2: '#3d2a40'
     },
     {
       id: 'marshal', name: 'MARSHAL',
@@ -103,7 +103,7 @@
     {
       id: 'wellness', name: 'WELLNESS GRIFTER',
       skin: 'olive', build: 'lean', face: 'round', hair: 'blonde', hairStyle: 'long',
-      brows: 'arched', makeup: 'shadow', makeupColor: '#8a7a4a',
+      brows: 'arched', makeup: ['top'], makeupColor: '#8a7a4a',
       shirt: '#e6dcc4', sleeves: 'long', graphic: 'flower', graphicColor: '#6fae4b',
       pants: '#cbbfa2', shoes: '#8a6948', prop: 'cup'
     },

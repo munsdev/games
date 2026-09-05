@@ -10,13 +10,14 @@
   var C = {};
   PW.CHAR = C;
 
-  C.SKINS = ['pale', 'peach', 'olive', 'tan', 'brown', 'deep'];
+  C.SKINS = ['porcelain', 'pale', 'rose', 'peach', 'amber', 'olive',
+             'tan', 'brown', 'umber', 'deep', 'ebony'];
   C.HAIRS = ['black', 'dark', 'brown', 'ginger', 'blonde', 'grey', 'white'];
   C.HAIR_STYLES = ['buzz', 'crop', 'slick', 'swoop', 'pomp', 'rough', 'curls', 'afro', 'bun', 'long', 'bald'];
   C.FACES = ['square', 'round', 'tapered', 'slim', 'broad'];
   C.BROWS = ['none', 'thin', 'thick', 'arched', 'angled'];
   C.BEARDS = ['none', 'full', 'goatee', 'stubble'];
-  C.MAKEUP = ['none', 'shadow', 'liner', 'full'];
+  C.MAKEUP_EDGES = ['top', 'bottom', 'outer', 'inner'];
   C.GLASSES = ['none', 'round', 'square', 'halfRim', 'shades', 'roundShades', 'aviator'];
   C.HATS = ['none', 'cap', 'beanie', 'cowboy', 'police'];
   C.BUILDS = ['normal', 'heavy', 'lean'];
@@ -48,7 +49,10 @@
       { k: 'brows', t: 'select', opts: C.BROWS },
       { k: 'browColor', t: 'optcolor' },
       { k: 'eyeColor', t: 'optcolor' },
-      { k: 'makeup', t: 'select', opts: C.MAKEUP },
+      { k: 'makeupTop', t: 'bool' },
+      { k: 'makeupBottom', t: 'bool' },
+      { k: 'makeupOuter', t: 'bool' },
+      { k: 'makeupInner', t: 'bool' },
       { k: 'makeupColor', t: 'color' },
       { k: 'makeupColor2', t: 'optcolor' }
     ]],
@@ -83,7 +87,8 @@
     hairStyle: 'Hair', hair: 'Hair colour', beardStyle: 'Beard', beardColor: 'Beard colour',
     hat: 'Hat', hatColor: 'Hat colour',
     brows: 'Brows', browColor: 'Brow colour', eyeColor: 'Eye colour',
-    makeup: 'Makeup', makeupColor: 'Upper colour', makeupColor2: 'Lower colour',
+    makeupTop: 'Ring: top', makeupBottom: 'Ring: bottom', makeupOuter: 'Ring: outer',
+    makeupInner: 'Ring: inner', makeupColor: 'Ring colour', makeupColor2: 'Lower colour',
     glasses: 'Glasses', glassesColor: 'Frames', lensColor: 'Lenses',
     shirt: 'Shirt', pattern: 'Pattern', patternColor: 'Pattern colour',
     graphic: 'Graphic', graphicColor: 'Graphic colour', sleeves: 'Sleeves',
@@ -97,7 +102,8 @@
       hairStyle: 'swoop', hair: 'brown', beardStyle: 'none', beardColor: 'brown',
       hat: 'none', hatColor: '#2b3a4a',
       brows: 'thin', browColor: null, eyeColor: null,
-      makeup: 'none', makeupColor: '#8a4a7a', makeupColor2: null,
+      makeupTop: false, makeupBottom: false, makeupOuter: false, makeupInner: false,
+      makeupColor: '#8a4a7a', makeupColor2: null,
       glasses: 'none', glassesColor: null, lensColor: null,
       shirt: '#33436b', pattern: 'none', patternColor: '#5a6a8c',
       graphic: 'none', graphicColor: '#f2f4f8', sleeves: 'long',
@@ -123,7 +129,10 @@
     if (S.beardStyle !== 'none') d.beard = { style: S.beardStyle, color: S.beardColor };
     if (S.hat !== 'none') { d.hat = S.hat; d.hatColor = S.hatColor; }
     if (S.brows !== 'none') d.brows = S.brows;
-    if (S.makeup !== 'none') { d.makeup = S.makeup; d.makeupColor = S.makeupColor; }
+    var ring = C.MAKEUP_EDGES.filter(function (e) {
+      return S['makeup' + e.charAt(0).toUpperCase() + e.slice(1)];
+    });
+    if (ring.length) { d.makeup = ring; d.makeupColor = S.makeupColor; }
     if (S.glasses !== 'none') d.glasses = S.glasses;
     if (S.pattern !== 'none') { d.pattern = S.pattern; d.patternColor = S.patternColor; }
     if (S.graphic !== 'none') { d.graphic = S.graphic; d.graphicColor = S.graphicColor; }
@@ -148,7 +157,14 @@
     S.hat = d.hat || 'none';
     S.hatColor = d.hatColor || '#2b3a4a';
     S.brows = d.brows || 'none';
-    S.makeup = d.makeup || 'none';
+    // Accepts the edge list, or the older shadow/liner/full names.
+    var LEGACY = { shadow: ['top'], liner: ['bottom', 'outer'], full: ['top', 'bottom', 'outer'] };
+    var ring = d.makeup;
+    if (typeof ring === 'string') ring = LEGACY[ring] || [];
+    if (!ring) ring = [];
+    C.MAKEUP_EDGES.forEach(function (e) {
+      S['makeup' + e.charAt(0).toUpperCase() + e.slice(1)] = ring.indexOf(e) !== -1;
+    });
     S.makeupColor = d.makeupColor || '#8a4a7a';
     S.glasses = d.glasses || (d.eyes === 'round' ? 'round' : d.eyes === 'shades' ? 'shades' : 'none');
     S.shirt = d.shirt || '#33436b';
@@ -182,7 +198,7 @@
       d.brows && 'brows: ' + q(d.brows),
       d.browColor && 'browColor: ' + q(d.browColor),
       d.eyeColor && 'eyeColor: ' + q(d.eyeColor),
-      d.makeup && 'makeup: ' + q(d.makeup),
+      d.makeup && 'makeup: [' + d.makeup.map(q).join(', ') + ']',
       d.makeup && 'makeupColor: ' + q(d.makeupColor),
       d.makeupColor2 && 'makeupColor2: ' + q(d.makeupColor2)
     ].filter(Boolean);

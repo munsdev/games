@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8"><title>Feature sheet</title>
 <style>body{background:#151a22;margin:0;padding:8px;font:10px monospace;color:#cfd6e2}canvas{image-rendering:pixelated}</style>
-</head><body><canvas id="c" width="1180" height="900"></canvas>
+</head><body><canvas id="c" width="1180" height="1040"></canvas>
 <script src="../src/palette.js"></script><script src="../src/sprites.js"></script>
 <script src="../src/charedit.js"></script><script src="../src/roster.js"></script>
 <script>
@@ -28,10 +28,12 @@ function band(title, items, facings){
 }
 band('HAIR (front / side)', ['swoop','pomp','afro','curls','bun','long'].map(function(h){
   return {label:h, def:base({hairStyle:h})};}), ['front','side']);
+band('SKIN', PW.CHAR.SKINS.map(function(k){return {label:k, def:base({skin:k})};}));
 band('FACE', PW.CHAR.FACES.map(function(f){return {label:f, def:base({face:f})};}));
 band('BROWS', PW.CHAR.BROWS.map(function(b){return {label:b, def:base({brows:b})};}));
-band('MAKEUP', PW.CHAR.MAKEUP.map(function(m){
-  return {label:m, def:base({makeup:m,makeupColor:'#a05a8a',makeupColor2:'#3a2030'})};}));
+band('EYE RING', [['top'],['bottom'],['outer'],['inner'],['top','bottom'],
+  ['top','bottom','outer','inner']].map(function(m){
+  return {label:m.join('+'), def:base({makeup:m,makeupColor:'#7a4a62',makeupColor2:'#3a2030'})};}));
 band('GLASSES', PW.CHAR.GLASSES.map(function(g){return {label:g, def:base({glasses:g})};}));
 band('GRAPHIC', PW.CHAR.GRAPHICS.slice(1).map(function(g){
   return {label:g, def:base({graphic:g,graphicColor:'#f2f4f8'})};}));
