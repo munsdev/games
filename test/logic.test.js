@@ -26,9 +26,9 @@ function check(name, cond, extra) {
 function step(g) { PW.advance(g, PW.stepDuration(g.score) + 1e-6); }
 
 console.log('\nstart state');
-var g = PW.newGame(0);
+var g = PW.newGame();
 check('starts ready', g.phase === 'ready');
-check('line is just the officer', g.body.length === 1 && g.execs.length === 0);
+check('column is just the officer', g.body.length === 1 && g.execs.length === 0);
 check('a target exists', !!g.target);
 check('target is not under the officer',
   !(g.target.x === g.body[0].x && g.target.y === g.body[0].y));
@@ -40,7 +40,7 @@ PW.steer(g, 1, 0); PW.steer(g, 0, -1);
 check('turn queue caps at two', PW.steer(g, -1, 0) === false && g.queue.length === 2);
 
 console.log('\npickups grow the line');
-g = PW.newGame(0);
+g = PW.newGame();
 PW.begin(g);
 // Park a target directly ahead and walk onto it, five times over.
 for (var n = 1; n <= 5; n += 1) {
@@ -50,10 +50,10 @@ for (var n = 1; n <= 5; n += 1) {
   step(g);
   if (g.score !== n) break;
 }
-check('score counts five collars', g.score === 5, g.score);
-check('line grew to match', g.body.length === 6 && g.execs.length === 5,
+check('score counts five arrests', g.score === 5, g.score);
+check('column grew to match', g.body.length === 6 && g.execs.length === 5,
   { body: g.body.length, execs: g.execs.length });
-check('newest collar rides just behind the officer', g.execs[0] === 4, g.execs[0]);
+check('newest arrest rides just behind the officer', g.execs[0] === 4, g.execs[0]);
 
 console.log('\nsegments occupy distinct cells');
 var seen = {}, overlap = false;
@@ -65,7 +65,7 @@ g.body.forEach(function (s) {
 check('no two segments share a cell', !overlap);
 
 console.log('\nbag randomisation');
-g = PW.newGame(0);
+g = PW.newGame();
 var counts = {}, draws = 0;
 for (var r = 0; r < 40; r += 1) {
   g.bag = g.bag.length ? g.bag : null;
@@ -88,16 +88,16 @@ check('every executive appeared at least once', Object.keys(counts).length === 1
   Object.keys(counts).length);
 
 console.log('\nwalls are fatal');
-g = PW.newGame(0);
+g = PW.newGame();
 PW.begin(g);
 g.dir = { x: 0, y: -1 };
 for (var w = 0; w < 40 && g.phase === 'playing'; w += 1) { g.queue.length = 0; g.dir = { x: 0, y: -1 }; step(g); }
 check('running off the top ends the run', g.phase === 'dead', g.phase);
 check('cause recorded as wall',
-  g.events.some(function (e) { return e.type === 'bust' && e.cause === 'wall'; }));
+  g.events.some(function (e) { return e.type === 'stopped' && e.cause === 'fence'; }));
 
 console.log('\ncrossing your own line is fatal');
-g = PW.newGame(0);
+g = PW.newGame();
 PW.begin(g);
 // Grow to five, then turn a tight square back into the body.
 for (var m = 0; m < 5; m += 1) {
@@ -107,12 +107,12 @@ for (var m = 0; m < 5; m += 1) {
 g.dir = { x: 0, y: 1 }; g.queue.length = 0; step(g);
 g.dir = { x: -1, y: 0 }; g.queue.length = 0; step(g);
 g.dir = { x: 0, y: -1 }; g.queue.length = 0; step(g);
-check('turning back into the line ends the run', g.phase === 'dead', g.phase);
+check('turning back into the column ends the run', g.phase === 'dead', g.phase);
 check('cause recorded as line',
-  g.events.some(function (e) { return e.type === 'bust' && e.cause === 'line'; }));
+  g.events.some(function (e) { return e.type === 'stopped' && e.cause === 'column'; }));
 
 console.log('\nfollowing your own tail is allowed');
-g = PW.newGame(0);
+g = PW.newGame();
 PW.begin(g);
 g.body = [
   { x: 5, y: 5, px: 4, py: 5 },

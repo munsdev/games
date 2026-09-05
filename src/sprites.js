@@ -122,34 +122,21 @@
       s.add(o + 8, 1, 8, 3, c);
       if (facing !== 'back') s.add(o + 16, 3, 4, 1, c);
       else s.add(o + 4, 3, 4, 1, c);
-    } else if (kind === 'peaked') { // military dress cap
-      s.add(o + 7, 0, 10, 3, c);
-      s.add(o + 6, 3, 12, 1, '#15181f');
-      if (facing !== 'back') s.det(o + 11, 1, 2, 1, accent);
+    } else if (kind === 'police') {
+      s.add(o + 7, 1, 10, 3, c);          // crown
+      s.add(o + 6, 4, 12, 1, '#12151d');  // brim
+      if (facing !== 'back') {
+        s.det(o + 11, 1, 2, 2, accent);   // shield
+        s.det(o + 11, 3, 2, 1, '#c9a24e');
+      }
     }
   }
 
   // ---------------------------------------------------------------- props ---
 
-  function usFlag(s, o) {
-    // Pole sits just outside the body; the flag hangs to its right.
-    s.add(17, 0, 1, 24, '#7a5a33');
-    var stripes = ['#c0392b', '#f4f4f4'];
-    for (var r = 0; r < 7; r += 1) {
-      var x = r < 3 ? 21 : 18;
-      var w = r < 3 ? 3 : 6;
-      s.det(x, 1 + r, w, 1, stripes[r % 2]);
-    }
-    s.det(18, 1, 3, 3, '#2a3d6e');
-    s.det(18, 1, 1, 1, '#f4f4f4');
-    s.det(20, 2, 1, 1, '#f4f4f4');
-    s.det(19, 3, 1, 1, '#f4f4f4');
-  }
-
   function prop(s, o, b, kind, skin) {
     if (!kind) return;
     var hx = o + b.armR;             // just outside the right hand
-    if (kind === 'flag') { usFlag(s, o); return; }
     if (kind === 'briefcase') {
       s.add(hx, 17, 5, 5, '#5c3d21');
       s.det(hx + 1, 19, 3, 1, '#c9a24e');
@@ -210,13 +197,14 @@
       s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y, 2, 4, def.lapels);
     }
     if (def.chain) s.det(cx - 2, TORSO_Y + 1, 4, 1, '#e4c06a');
-    if (def.medals) {
-      s.det(o + b.torsoX + 1, TORSO_Y + 1, 2, 1, '#d9534f');
-      s.det(o + b.torsoX + 1, TORSO_Y + 3, 2, 1, '#5b8dd9');
-      s.det(o + b.torsoX + 4, TORSO_Y + 1, 2, 1, '#e4c06a');
-      s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y + 1, 2, 2, '#e4c06a');
-    }
     if (def.badge) s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y + 1, 2, 2, PW.UI.accent);
+  }
+
+
+  function belt(s, o, b, def) {
+    if (!def.belt) return;
+    s.det(o + b.hipX, HIP_Y, b.hipW, 1, def.belt);
+    s.det(o + b.hipX + Math.floor(b.hipW / 2) - 1, HIP_Y, 2, 1, '#e4c06a');
   }
 
   // ------------------------------------------------------------- assembly --
@@ -234,6 +222,7 @@
     s.add(o + b.legRX, LEG_Y, b.legW, LEG_H, def.pants);
     s.add(o + b.legLX, SHOE_Y, b.legW, SHOE_H, def.shoes);
     s.add(o + b.legRX, SHOE_Y, b.legW, SHOE_H, def.shoes);
+    belt(s, o, b, def);
 
     s.add(o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, def.shirt);
     torsoDetail(s, o, b, def, 'front');
@@ -309,6 +298,7 @@
     s.add(tx, HIP_Y, narrow, HIP_H, def.pants);
     s.add(tx + 1, LEG_Y, narrow - 2, LEG_H, def.pants);
     s.add(tx, SHOE_Y, narrow + 1, SHOE_H, def.shoes);
+    if (def.belt) s.det(tx, HIP_Y, narrow, 1, def.belt);
 
     s.add(tx, TORSO_Y, narrow, TORSO_H, def.shirt);
 
@@ -360,6 +350,7 @@
     s.add(o + b.legRX, LEG_Y, b.legW, LEG_H, def.pants);
     s.add(o + b.legLX, SHOE_Y, b.legW, SHOE_H, def.shoes);
     s.add(o + b.legRX, SHOE_Y, b.legW, SHOE_H, def.shoes);
+    belt(s, o, b, def);
 
     s.add(o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, def.shirt);
     torsoDetail(s, o, b, def, 'back');

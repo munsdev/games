@@ -1,6 +1,6 @@
 /* Who is in the game.
 
-   PLAYERS are pickable on the title screen and are never cuffed.
+   The OFFICER is who you steer, and is never cuffed.
    EXECS are the pickups. Each one is baked twice: loose (holding whatever
    prop they carry) for when they're standing in the lot, and cuffed for once
    they've joined the line behind you. Their clothes stay the same either way,
@@ -8,67 +8,26 @@
 (function (PW) {
   'use strict';
 
-  PW.PLAYERS = [
-    {
-      id: 'hero',
-      name: 'HERO',
-      skin: 'deep',
-      build: 'normal',
-      hair: 'black',
-      hairStyle: 'buzz',
-      shirt: '#c0392b',
-      sleeves: 'long',
-      pants: '#2f4b8f',
-      shoes: '#22262f',
-      eyes: 'plain'
-    },
-    {
-      id: 'jolly',
-      name: 'JOLLY',
-      skin: 'pale',
-      build: 'heavy',
-      hair: 'ginger',
-      hairStyle: 'rough',
-      beard: { style: 'full', color: 'ginger' },
-      shirt: '#4f7a4a',
-      sleeves: 'long',
-      pants: '#6b5334',
-      shoes: '#3b2f22',
-      eyes: 'plain'
-    },
-    {
-      id: 'benny',
-      name: 'BENNY',
-      skin: 'pale',
-      build: 'normal',
-      hair: 'brown',
-      hairStyle: 'buzz',
-      shirt: '#e8edf5',
-      sleeves: 'long',
-      tie: '#2f4b8f',
-      pants: '#39404f',
-      shoes: '#22262f',
-      eyes: 'round'
-    },
-    {
-      id: 'general',
-      name: 'GENERAL',
-      skin: 'brown',
-      build: 'heavy',
-      hair: 'black',
-      hairStyle: 'buzz',
-      hat: 'peaked',
-      hatColor: '#2a3446',
-      shirt: '#2a3446',
-      sleeves: 'long',
-      pants: '#2a3446',
-      shoes: '#181c24',
-      eyes: 'shades',
-      medals: true,
-      prop: 'flag',
-      offsetX: -3
-    }
-  ];
+  /* One officer, no picker: plain municipal police so the role reads at a
+     glance - navy uniform, capped shield, duty belt. Skin tone, build and
+     colours are all single-value changes here. */
+  PW.OFFICER = {
+    id: 'officer',
+    name: 'OFFICER',
+    skin: 'tan',
+    build: 'normal',
+    hair: 'dark',
+    hairStyle: 'buzz',
+    hat: 'police',
+    hatColor: '#1f2942',
+    shirt: '#33436b',
+    sleeves: 'long',
+    pants: '#232c42',
+    shoes: '#141821',
+    belt: '#141821',
+    badge: true,
+    eyes: 'plain'
+  };
 
   PW.EXECS = [
     {
@@ -136,10 +95,10 @@
     }
   ];
 
-  PW.art = { players: [], execs: [] };
+  PW.art = { officer: null, execs: [] };
 
   PW.bakeAll = function () {
-    PW.art.players = PW.PLAYERS.map(function (d) { return PW.bake(d, { cuffed: false }); });
+    PW.art.officer = PW.bake(PW.OFFICER, { cuffed: false });
     PW.art.execs = PW.EXECS.map(function (d) {
       return {
         loose: PW.bake(d, { cuffed: false }).front,

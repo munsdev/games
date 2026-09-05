@@ -12,10 +12,10 @@ function row(label,imgs,y){
   imgs.forEach(function(im,i){ctx.drawImage(im,6+i*(S*Z+pad),y,S*Z,S*Z);});
 }
 var y=16;
-PW.PLAYERS.forEach(function(d,i){
-  var a=PW.bake(d,{cuffed:false});
-  row(d.name,[a.front,a.side,a.back],y);y+=S*Z+18;
-});
+(function(){
+  var a=PW.bake(PW.OFFICER,{cuffed:false});
+  row(PW.OFFICER.name,[a.front,a.side,a.back],y);y+=S*Z+18;
+})();
 var x0=6+3*(S*Z+pad)+30;
 var yy=16;
 PW.EXECS.forEach(function(d,i){

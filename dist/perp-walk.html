@@ -218,7 +218,7 @@ kbd {
 
   <header class="marquee">
     <h1>Perp Walk</h1>
-    <p class="tag">Collar every executive &middot; never cross your own line</p>
+    <p class="tag">Arrest every executive &middot; the column behind you blocks the way</p>
   </header>
 
   <div class="cabinet">
@@ -236,15 +236,14 @@ kbd {
     <span><kbd>Space</kbd> start</span>
     <span><kbd>M</kbd> mute</span>
     <span><kbd>R</kbd> restart</span>
-    <span><kbd>C</kbd> change officer</span>
   </div>
 
   <section class="board">
-    <h2>Today&rsquo;s lot</h2>
+    <h2>Today&rsquo;s roster</h2>
     <p class="note">Ten executives, dealt from a shuffled bag &mdash; the whole roster comes
-      out in a random order before anyone repeats. Each one you collar keeps their own
-      face and clothes, drops whatever they were carrying, and joins the line behind you
-      in handcuffs.</p>
+      out in a random order before anyone repeats. Each one you arrest keeps their own
+      face and clothes, drops whatever they were carrying, and joins the column behind
+      you in handcuffs.</p>
     <ul id="lot" class="lot"></ul>
   </section>
 
@@ -623,34 +622,21 @@ window.PW = window.PW || {};
       s.add(o + 8, 1, 8, 3, c);
       if (facing !== 'back') s.add(o + 16, 3, 4, 1, c);
       else s.add(o + 4, 3, 4, 1, c);
-    } else if (kind === 'peaked') { // military dress cap
-      s.add(o + 7, 0, 10, 3, c);
-      s.add(o + 6, 3, 12, 1, '#15181f');
-      if (facing !== 'back') s.det(o + 11, 1, 2, 1, accent);
+    } else if (kind === 'police') {
+      s.add(o + 7, 1, 10, 3, c);          // crown
+      s.add(o + 6, 4, 12, 1, '#12151d');  // brim
+      if (facing !== 'back') {
+        s.det(o + 11, 1, 2, 2, accent);   // shield
+        s.det(o + 11, 3, 2, 1, '#c9a24e');
+      }
     }
   }
 
   // ---------------------------------------------------------------- props ---
 
-  function usFlag(s, o) {
-    // Pole sits just outside the body; the flag hangs to its right.
-    s.add(17, 0, 1, 24, '#7a5a33');
-    var stripes = ['#c0392b', '#f4f4f4'];
-    for (var r = 0; r < 7; r += 1) {
-      var x = r < 3 ? 21 : 18;
-      var w = r < 3 ? 3 : 6;
-      s.det(x, 1 + r, w, 1, stripes[r % 2]);
-    }
-    s.det(18, 1, 3, 3, '#2a3d6e');
-    s.det(18, 1, 1, 1, '#f4f4f4');
-    s.det(20, 2, 1, 1, '#f4f4f4');
-    s.det(19, 3, 1, 1, '#f4f4f4');
-  }
-
   function prop(s, o, b, kind, skin) {
     if (!kind) return;
     var hx = o + b.armR;             // just outside the right hand
-    if (kind === 'flag') { usFlag(s, o); return; }
     if (kind === 'briefcase') {
       s.add(hx, 17, 5, 5, '#5c3d21');
       s.det(hx + 1, 19, 3, 1, '#c9a24e');
@@ -711,13 +697,14 @@ window.PW = window.PW || {};
       s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y, 2, 4, def.lapels);
     }
     if (def.chain) s.det(cx - 2, TORSO_Y + 1, 4, 1, '#e4c06a');
-    if (def.medals) {
-      s.det(o + b.torsoX + 1, TORSO_Y + 1, 2, 1, '#d9534f');
-      s.det(o + b.torsoX + 1, TORSO_Y + 3, 2, 1, '#5b8dd9');
-      s.det(o + b.torsoX + 4, TORSO_Y + 1, 2, 1, '#e4c06a');
-      s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y + 1, 2, 2, '#e4c06a');
-    }
     if (def.badge) s.det(o + b.torsoX + b.torsoW - 3, TORSO_Y + 1, 2, 2, PW.UI.accent);
+  }
+
+
+  function belt(s, o, b, def) {
+    if (!def.belt) return;
+    s.det(o + b.hipX, HIP_Y, b.hipW, 1, def.belt);
+    s.det(o + b.hipX + Math.floor(b.hipW / 2) - 1, HIP_Y, 2, 1, '#e4c06a');
   }
 
   // ------------------------------------------------------------- assembly --
@@ -735,6 +722,7 @@ window.PW = window.PW || {};
     s.add(o + b.legRX, LEG_Y, b.legW, LEG_H, def.pants);
     s.add(o + b.legLX, SHOE_Y, b.legW, SHOE_H, def.shoes);
     s.add(o + b.legRX, SHOE_Y, b.legW, SHOE_H, def.shoes);
+    belt(s, o, b, def);
 
     s.add(o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, def.shirt);
     torsoDetail(s, o, b, def, 'front');
@@ -810,6 +798,7 @@ window.PW = window.PW || {};
     s.add(tx, HIP_Y, narrow, HIP_H, def.pants);
     s.add(tx + 1, LEG_Y, narrow - 2, LEG_H, def.pants);
     s.add(tx, SHOE_Y, narrow + 1, SHOE_H, def.shoes);
+    if (def.belt) s.det(tx, HIP_Y, narrow, 1, def.belt);
 
     s.add(tx, TORSO_Y, narrow, TORSO_H, def.shirt);
 
@@ -861,6 +850,7 @@ window.PW = window.PW || {};
     s.add(o + b.legRX, LEG_Y, b.legW, LEG_H, def.pants);
     s.add(o + b.legLX, SHOE_Y, b.legW, SHOE_H, def.shoes);
     s.add(o + b.legRX, SHOE_Y, b.legW, SHOE_H, def.shoes);
+    belt(s, o, b, def);
 
     s.add(o + b.torsoX, TORSO_Y, b.torsoW, TORSO_H, def.shirt);
     torsoDetail(s, o, b, def, 'back');
@@ -925,7 +915,7 @@ window.PW = window.PW || {};
 /* ==== roster.js ==== */
 /* Who is in the game.
 
-   PLAYERS are pickable on the title screen and are never cuffed.
+   The OFFICER is who you steer, and is never cuffed.
    EXECS are the pickups. Each one is baked twice: loose (holding whatever
    prop they carry) for when they're standing in the lot, and cuffed for once
    they've joined the line behind you. Their clothes stay the same either way,
@@ -933,67 +923,26 @@ window.PW = window.PW || {};
 (function (PW) {
   'use strict';
 
-  PW.PLAYERS = [
-    {
-      id: 'hero',
-      name: 'HERO',
-      skin: 'deep',
-      build: 'normal',
-      hair: 'black',
-      hairStyle: 'buzz',
-      shirt: '#c0392b',
-      sleeves: 'long',
-      pants: '#2f4b8f',
-      shoes: '#22262f',
-      eyes: 'plain'
-    },
-    {
-      id: 'jolly',
-      name: 'JOLLY',
-      skin: 'pale',
-      build: 'heavy',
-      hair: 'ginger',
-      hairStyle: 'rough',
-      beard: { style: 'full', color: 'ginger' },
-      shirt: '#4f7a4a',
-      sleeves: 'long',
-      pants: '#6b5334',
-      shoes: '#3b2f22',
-      eyes: 'plain'
-    },
-    {
-      id: 'benny',
-      name: 'BENNY',
-      skin: 'pale',
-      build: 'normal',
-      hair: 'brown',
-      hairStyle: 'buzz',
-      shirt: '#e8edf5',
-      sleeves: 'long',
-      tie: '#2f4b8f',
-      pants: '#39404f',
-      shoes: '#22262f',
-      eyes: 'round'
-    },
-    {
-      id: 'general',
-      name: 'GENERAL',
-      skin: 'brown',
-      build: 'heavy',
-      hair: 'black',
-      hairStyle: 'buzz',
-      hat: 'peaked',
-      hatColor: '#2a3446',
-      shirt: '#2a3446',
-      sleeves: 'long',
-      pants: '#2a3446',
-      shoes: '#181c24',
-      eyes: 'shades',
-      medals: true,
-      prop: 'flag',
-      offsetX: -3
-    }
-  ];
+  /* One officer, no picker: plain municipal police so the role reads at a
+     glance - navy uniform, capped shield, duty belt. Skin tone, build and
+     colours are all single-value changes here. */
+  PW.OFFICER = {
+    id: 'officer',
+    name: 'OFFICER',
+    skin: 'tan',
+    build: 'normal',
+    hair: 'dark',
+    hairStyle: 'buzz',
+    hat: 'police',
+    hatColor: '#1f2942',
+    shirt: '#33436b',
+    sleeves: 'long',
+    pants: '#232c42',
+    shoes: '#141821',
+    belt: '#141821',
+    badge: true,
+    eyes: 'plain'
+  };
 
   PW.EXECS = [
     {
@@ -1061,10 +1010,10 @@ window.PW = window.PW || {};
     }
   ];
 
-  PW.art = { players: [], execs: [] };
+  PW.art = { officer: null, execs: [] };
 
   PW.bakeAll = function () {
-    PW.art.players = PW.PLAYERS.map(function (d) { return PW.bake(d, { cuffed: false }); });
+    PW.art.officer = PW.bake(PW.OFFICER, { cuffed: false });
     PW.art.execs = PW.EXECS.map(function (d) {
       return {
         loose: PW.bake(d, { cuffed: false }).front,
@@ -1117,12 +1066,12 @@ window.PW = window.PW || {};
     }
 
     var api = {
-      turn: function () { tone(620, null, 0.03, 'square', 0.012); },
-      collar: function () {
+      steer: function () { tone(620, null, 0.03, 'square', 0.012); },
+      arrest: function () {
         tone(760, null, 0.06, 'triangle', 0.05);
         setTimeout(function () { tone(1140, null, 0.09, 'triangle', 0.04); }, 55);
       },
-      bust: function () { tone(320, 80, 0.35, 'sawtooth', 0.06); },
+      stopped: function () { tone(320, 80, 0.35, 'sawtooth', 0.06); },
       start: function () {
         tone(520, null, 0.07, 'square', 0.035);
         setTimeout(function () { tone(800, null, 0.1, 'square', 0.03); }, 70);
@@ -1206,19 +1155,18 @@ window.PW = window.PW || {};
     }
     if (free.length === 0) {
       g.target = null;
-      g.phase = 'cleared';
+      g.phase = 'docket';
       g.t = 0;
-      g.events.push({ type: 'cleared', score: g.score });
+      g.events.push({ type: 'docket', score: g.score });
       return;
     }
     var cell = free[Math.floor(Math.random() * free.length)];
     g.target = { x: cell.x, y: cell.y, exec: drawFromBag(g) };
   }
 
-  PW.newGame = function (playerIndex) {
+  PW.newGame = function () {
     var g = {
       phase: 'ready',
-      player: playerIndex || 0,
       body: [],
       execs: [],
       dir: { x: DIRS.right.x, y: DIRS.right.y },
@@ -1248,7 +1196,7 @@ window.PW = window.PW || {};
 
   /* Returns true if the input did something, so the caller knows to click. */
   PW.steer = function (g, dx, dy) {
-    if (g.phase === 'dead' || g.phase === 'cleared') return false;
+    if (g.phase === 'dead' || g.phase === 'docket') return false;
     var last = g.queue.length > 0 ? g.queue[g.queue.length - 1] : g.dir;
     if (dx === -last.x && dy === -last.y) return false;   // no instant reversal
     if (g.phase === 'ready') {
@@ -1258,15 +1206,15 @@ window.PW = window.PW || {};
     if (dx === last.x && dy === last.y) return false;     // already going that way
     if (g.queue.length >= QUEUE_MAX) return false;
     g.queue.push({ x: dx, y: dy });
-    g.events.push({ type: 'turn' });
+    g.events.push({ type: 'steer' });
     return true;
   };
 
-  function bust(g, cause, x, y) {
+  function stop(g, cause, x, y) {
     g.phase = 'dead';
     g.t = 0;
     g.acc = 0;
-    g.events.push({ type: 'bust', cause: cause, x: x, y: y, score: g.score });
+    g.events.push({ type: 'stopped', cause: cause, x: x, y: y, score: g.score });
   }
 
   function step(g) {
@@ -1277,7 +1225,7 @@ window.PW = window.PW || {};
     var ny = head.y + g.dir.y;
 
     if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) {
-      bust(g, 'wall', nx, ny);
+      stop(g, 'fence', nx, ny);
       return;
     }
 
@@ -1286,7 +1234,7 @@ window.PW = window.PW || {};
     var limit = grows ? g.body.length : g.body.length - 1;
     for (var i = 0; i < limit; i += 1) {
       if (g.body[i].x === nx && g.body[i].y === ny) {
-        bust(g, 'line', nx, ny);
+        stop(g, 'column', nx, ny);
         return;
       }
     }
@@ -1313,7 +1261,7 @@ window.PW = window.PW || {};
     else { tail.px = vx; tail.py = vy; }
 
     if (grows) {
-      g.events.push({ type: 'collar', x: nx, y: ny, exec: captured, score: g.score });
+      g.events.push({ type: 'arrest', x: nx, y: ny, exec: captured, score: g.score });
       spawnTarget(g);
     }
   }
@@ -1333,8 +1281,8 @@ window.PW = window.PW || {};
 })(window.PW);
 
 /* ==== render.js ==== */
-/* Everything that puts pixels on the buffer: the lot, the line, the HUD and
-   the three full-screen states (character select, ready, game over). */
+/* Everything that puts pixels on the buffer: the plaza, the column, the HUD
+   and the two full-screen states (shift start, shift over). */
 (function (PW) {
   'use strict';
 
@@ -1487,14 +1435,14 @@ window.PW = window.PW || {};
 
   function drawLine(ctx, g) {
     var t = PW.stepProgress(g);
-    var playerArt = PW.art.players[g.player];
+    var officer = PW.art.officer;
     // Back to front, so each figure overlaps the one behind it.
     for (var i = g.body.length - 1; i >= 0; i -= 1) {
       var seg = g.body[i];
       var x = V.px + (seg.px + (seg.x - seg.px) * t) * CELL;
       var y = V.py + (seg.py + (seg.y - seg.py) * t) * CELL;
       var f = facingFor(seg, g.dir);
-      var art = i === 0 ? playerArt : PW.art.execs[g.execs[i - 1]].cuffed;
+      var art = i === 0 ? officer : PW.art.execs[g.execs[i - 1]].cuffed;
       PW.blit(ctx, art[f.key], Math.round(x), Math.round(y), f.flip);
     }
   }
@@ -1505,9 +1453,9 @@ window.PW = window.PW || {};
     ctx.fillStyle = PW.UI.frameEdge;
     ctx.fillRect(0, HUD_H - 1, V.width, 1);
 
-    PW.text(ctx, 'BUSTED', 8, 12, PW.UI.textDim, 1);
+    PW.text(ctx, 'ARRESTS', 8, 12, PW.UI.textDim, 1);
     var lift = Math.round(pop * 2);
-    PW.text(ctx, String(g.score), 8 + PW.textWidth('BUSTED', 1) + 6, 8 - lift, PW.UI.text, 2);
+    PW.text(ctx, String(g.score), 8 + PW.textWidth('ARRESTS', 1) + 6, 8 - lift, PW.UI.text, 2);
 
     if (best > 0) {
       var label = 'BEST ' + best;
@@ -1517,68 +1465,28 @@ window.PW = window.PW || {};
 
   // ------------------------------------------------------------- screens ---
 
-  function drawSelect(ctx, index, clock) {
-    ctx.fillStyle = 'rgba(8, 11, 17, 0.9)';
-    ctx.fillRect(V.px, V.py, PLAY_W, PLAY_H);
-
-    var cx = V.px + PLAY_W / 2;
-    PW.textCentered(ctx, 'PERP WALK', cx, V.py + 44, PW.UI.text, 3);
-    PW.textCentered(ctx, 'PICK YOUR OFFICER', cx, V.py + 84, PW.UI.textDim, 1);
-
-    var slot = PLAY_W / PW.PLAYERS.length;
-    var rowY = V.py + 146;
-
-    for (var i = 0; i < PW.PLAYERS.length; i += 1) {
-      var sx = Math.round(V.px + slot * i + slot / 2 - PW.SPRITE);
-      var chosen = i === index;
-
-      if (chosen) {
-        var pulse = 0.5 + Math.sin(clock * 6) * 0.25;
-        ctx.fillStyle = 'rgba(245, 185, 66, ' + pulse.toFixed(2) + ')';
-        ctx.fillRect(sx - 6, rowY - 6, PW.SPRITE * 2 + 12, 1);
-        ctx.fillRect(sx - 6, rowY + PW.SPRITE * 2 + 5, PW.SPRITE * 2 + 12, 1);
-        ctx.fillRect(sx - 6, rowY - 6, 1, PW.SPRITE * 2 + 12);
-        ctx.fillRect(sx + PW.SPRITE * 2 + 5, rowY - 6, 1, PW.SPRITE * 2 + 12);
-      }
-
-      ctx.save();
-      if (!chosen) ctx.globalAlpha = 0.45;
-      ctx.drawImage(PW.art.players[i].front, sx, rowY, PW.SPRITE * 2, PW.SPRITE * 2);
-      ctx.restore();
-
-      PW.textCentered(
-        ctx, PW.PLAYERS[i].name,
-        V.px + slot * i + slot / 2, rowY + PW.SPRITE * 2 + 16,
-        chosen ? PW.UI.accent : PW.UI.textDim, 1
-      );
-    }
-
-    PW.textCentered(ctx, 'LEFT / RIGHT TO CHOOSE', cx, V.py + PLAY_H - 84, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'PRESS ENTER TO BEGIN', cx, V.py + PLAY_H - 64, PW.UI.text, 1);
-  }
-
   function drawReady(ctx) {
     // Sits high on the board so it never covers the officer's start cell.
     var cx = V.px + PLAY_W / 2;
     var top = V.py + 46;
     panel(ctx, top, 88);
-    PW.textCentered(ctx, 'WALK THE LOT', cx, top + 12, PW.UI.text, 2);
-    PW.textCentered(ctx, 'COLLAR EVERY EXECUTIVE YOU FIND', cx, top + 38, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'NEVER CROSS YOUR OWN LINE', cx, top + 52, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'SHIFT START', cx, top + 12, PW.UI.text, 2);
+    PW.textCentered(ctx, 'ARREST EVERY EXECUTIVE ON THE PLAZA', cx, top + 38, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'THE COLUMN BEHIND YOU BLOCKS THE WAY', cx, top + 52, PW.UI.textDim, 1);
     PW.textCentered(ctx, 'STEER TO BEGIN', cx, top + 72, PW.UI.accent, 1);
   }
 
   function drawOver(ctx, g, best, fresh) {
     var cx = V.px + PLAY_W / 2;
     panel(ctx, V.py + PLAY_H / 2 - 34, 68);
-    PW.textCentered(ctx, g.score + ' BUSTED', cx, V.py + PLAY_H / 2 - 24, PW.UI.text, 2);
+    PW.textCentered(ctx, g.score + ' ARRESTS', cx, V.py + PLAY_H / 2 - 24, PW.UI.text, 2);
     PW.textCentered(
       ctx,
       fresh ? 'NEW BEST' : 'BEST ' + best,
       cx, V.py + PLAY_H / 2 + 2,
       fresh ? PW.UI.accent : PW.UI.textDim, 1
     );
-    PW.textCentered(ctx, 'SPACE RETRY   C CHANGE OFFICER', cx, V.py + PLAY_H / 2 + 18, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'SPACE FOR ANOTHER SHIFT', cx, V.py + PLAY_H / 2 + 18, PW.UI.textDim, 1);
   }
 
   function drawCleared(ctx, g) {
@@ -1597,20 +1505,6 @@ window.PW = window.PW || {};
     ctx.fillRect(0, 0, V.width, V.height);
     ctx.drawImage(lotTile, 0, HUD_H);
 
-    if (ui.screen === 'select') {
-      drawSelect(ctx, ui.selectIndex, ui.clock);
-      ctx.fillStyle = PW.UI.barBg;
-      ctx.fillRect(0, 0, V.width, HUD_H);
-      ctx.fillStyle = PW.UI.frameEdge;
-      ctx.fillRect(0, HUD_H - 1, V.width, 1);
-      PW.text(ctx, 'PERP WALK', 8, 12, PW.UI.textDim, 1);
-      if (ui.best > 0) {
-        var lbl = 'BEST ' + ui.best;
-        PW.text(ctx, lbl, V.width - 8 - PW.textWidth(lbl, 1), 12, PW.UI.accent, 1);
-      }
-      return;
-    }
-
     drawTarget(ctx, g, ui.clock);
     drawLine(ctx, g);
     ui.dust.draw(ctx);
@@ -1618,7 +1512,7 @@ window.PW = window.PW || {};
 
     if (g.phase === 'ready') drawReady(ctx);
     else if (g.phase === 'dead') drawOver(ctx, g, ui.best, ui.fresh);
-    else if (g.phase === 'cleared') drawCleared(ctx, g);
+    else if (g.phase === 'docket') drawCleared(ctx, g);
   };
 })(window.PW);
 
@@ -1648,8 +1542,6 @@ window.PW = window.PW || {};
   var dust = PW.createDust();
 
   var ui = {
-    screen: 'select',
-    selectIndex: 0,
     best: readBest(),
     clock: 0,
     pop: 0,
@@ -1658,7 +1550,7 @@ window.PW = window.PW || {};
     dust: dust
   };
 
-  var game = PW.newGame(0);
+  var game = PW.newGame();
   var lastPhase = '';
   var lastScore = -1;
 
@@ -1677,32 +1569,19 @@ window.PW = window.PW || {};
 
   // ------------------------------------------------------------ commands ---
 
-  function startRun(index) {
-    ui.screen = 'game';
+  function retry() {
     ui.fresh = false;
-    game = PW.newGame(index);
+    game = PW.newGame();
     dust.clear();
     lastPhase = '';
     lastScore = -1;
     audio.start();
-    say(PW.PLAYERS[index].name + ' is on duty. Steer to begin.');
-  }
-
-  function backToSelect() {
-    ui.screen = 'select';
-    dust.clear();
-    lastPhase = '';
-    say('Choose your officer.');
-  }
-
-  function retry() {
-    startRun(game.player);
+    say('Officer on duty. Steer to begin.');
   }
 
   function confirmOrRetry() {
     audio.wake();
-    if (ui.screen === 'select') { startRun(ui.selectIndex); return; }
-    if (game.phase === 'dead' || game.phase === 'cleared') {
+    if (game.phase === 'dead' || game.phase === 'docket') {
       if (game.t >= RETRY_DELAY) retry();
       return;
     }
@@ -1711,15 +1590,7 @@ window.PW = window.PW || {};
 
   function steer(dx, dy) {
     audio.wake();
-    if (ui.screen === 'select') {
-      if (dx !== 0) {
-        ui.selectIndex = (ui.selectIndex + dx + PW.PLAYERS.length) % PW.PLAYERS.length;
-        audio.turn();
-        say(PW.PLAYERS[ui.selectIndex].name);
-      }
-      return;
-    }
-    if (game.phase === 'dead' || game.phase === 'cleared') {
+    if (game.phase === 'dead' || game.phase === 'docket') {
       if (game.t >= RETRY_DELAY) retry();
       return;
     }
@@ -1738,15 +1609,7 @@ window.PW = window.PW || {};
     var key = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
 
     if (key === 'm') { audio.toggle(); return; }
-    if (key === 'r') {
-      if (ui.screen === 'game') { ev.preventDefault(); retry(); }
-      return;
-    }
-    if (key === 'c') {
-      if (ui.screen === 'game') { ev.preventDefault(); backToSelect(); }
-      return;
-    }
-
+    if (key === 'r') { ev.preventDefault(); retry(); return; }
     var dir = KEYS[key];
     if (dir) {
       ev.preventDefault();
@@ -1766,19 +1629,6 @@ window.PW = window.PW || {};
     ev.preventDefault();
     audio.wake();
     var p = screen.toBuffer(ev.clientX, ev.clientY);
-
-    if (ui.screen === 'select') {
-      // Clicking a portrait picks that officer and starts immediately.
-      var slot = (PW.VIEW.width - PW.VIEW.px * 2) / PW.PLAYERS.length;
-      var idx = Math.floor((p.x - PW.VIEW.px) / slot);
-      if (idx >= 0 && idx < PW.PLAYERS.length) {
-        ui.selectIndex = idx;
-        startRun(idx);
-      } else {
-        startRun(ui.selectIndex);
-      }
-      return;
-    }
 
     if (game.phase !== 'playing') { confirmOrRetry(); return; }
 
@@ -1800,10 +1650,10 @@ window.PW = window.PW || {};
   function consumeEvents() {
     for (var i = 0; i < game.events.length; i += 1) {
       var e = game.events[i];
-      if (e.type === 'turn') {
-        audio.turn();
-      } else if (e.type === 'collar') {
-        audio.collar();
+      if (e.type === 'steer') {
+        audio.steer();
+      } else if (e.type === 'arrest') {
+        audio.arrest();
         ui.pop = 1;
         dust.burst(
           PW.VIEW.px + e.x * PW.VIEW.cell + PW.VIEW.cell / 2,
@@ -1811,16 +1661,16 @@ window.PW = window.PW || {};
           PW.UI.accent, 1.2
         );
         if (e.score > ui.best) { ui.best = e.score; writeBest(e.score); ui.fresh = true; }
-      } else if (e.type === 'bust') {
-        audio.bust();
+      } else if (e.type === 'stopped') {
+        audio.stopped();
         ui.shake = calm ? 0 : 4;
         dust.burst(
           PW.VIEW.px + Math.max(0, Math.min(PW.COLS - 1, e.x)) * PW.VIEW.cell + PW.VIEW.cell / 2,
           PW.VIEW.py + Math.max(0, Math.min(PW.ROWS - 1, e.y)) * PW.VIEW.cell + PW.VIEW.cell / 2,
           PW.UI.danger, 1.8
         );
-      } else if (e.type === 'cleared') {
-        audio.collar();
+      } else if (e.type === 'docket') {
+        audio.arrest();
       }
     }
     game.events.length = 0;
@@ -1830,9 +1680,9 @@ window.PW = window.PW || {};
     if (game.phase !== lastPhase) {
       lastPhase = game.phase;
       if (game.phase === 'playing') say('On patrol.');
-      if (game.phase === 'cleared') say('Full docket. All ' + game.score + ' booked.');
+      if (game.phase === 'docket') say('Full docket. All ' + game.score + ' booked.');
       if (game.phase === 'dead') {
-        say(game.score + ' busted' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space for another run.');
+        say(game.score + ' arrests' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space for another shift.');
       }
       return;
     }
@@ -1844,11 +1694,9 @@ window.PW = window.PW || {};
 
   function update(dt) {
     ui.clock += dt;
-    if (ui.screen === 'game') {
-      PW.advance(game, dt);
-      consumeEvents();
-      announce();
-    }
+    PW.advance(game, dt);
+    consumeEvents();
+    announce();
     dust.update(dt);
     ui.pop = Math.max(0, ui.pop - dt * 3.5);
     ui.shake *= Math.max(0, 1 - 9 * dt);
@@ -1862,7 +1710,7 @@ window.PW = window.PW || {};
     screen.present(sx, sy);
   }
 
-  say('Choose your officer.');
+  say('Officer on duty. Steer to begin.');
   PW.runLoop(update, render);
 })(window.PW);
 

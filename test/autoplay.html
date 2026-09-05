@@ -14,9 +14,9 @@ PW.bakeAll();
 var sc = PW.createScreen(document.getElementById('stage'),
   {width: PW.VIEW.width, height: PW.VIEW.height, background: PW.UI.void});
 var dust = PW.createDust();
-var g = PW.newGame(Number(new URLSearchParams(location.search).get('who') || 0));
+var g = PW.newGame();
 PW.begin(g);
-var ui = {screen:'game', selectIndex:0, best:0, clock:0, pop:0, fresh:false, dust:dust};
+var ui = {best:0, clock:0, pop:0, fresh:false, dust:dust};
 window.__probe = function () {
   return {phase:g.phase, score:g.score, body:g.body.length, execs:g.execs.length};
 };
@@ -65,12 +65,12 @@ var last = performance.now();
   PW.advance(g, dt);
   for (var i = 0; i < g.events.length; i += 1) {
     var e = g.events[i];
-    if (e.type === 'collar') {
+    if (e.type === 'arrest') {
       ui.pop = 1;
       dust.burst(PW.VIEW.px + e.x*PW.VIEW.cell + 12, PW.VIEW.py + e.y*PW.VIEW.cell + 12, PW.UI.accent, 1.2);
       if (e.score > ui.best) { ui.best = e.score; ui.fresh = true; }
     }
-    if (e.type === 'bust') {
+    if (e.type === 'stopped') {
       dust.burst(PW.VIEW.px + e.x*PW.VIEW.cell + 12, PW.VIEW.py + e.y*PW.VIEW.cell + 12, PW.UI.danger, 1.8);
     }
   }

@@ -1,5 +1,5 @@
-/* Everything that puts pixels on the buffer: the lot, the line, the HUD and
-   the three full-screen states (character select, ready, game over). */
+/* Everything that puts pixels on the buffer: the plaza, the column, the HUD
+   and the two full-screen states (shift start, shift over). */
 (function (PW) {
   'use strict';
 
@@ -152,14 +152,14 @@
 
   function drawLine(ctx, g) {
     var t = PW.stepProgress(g);
-    var playerArt = PW.art.players[g.player];
+    var officer = PW.art.officer;
     // Back to front, so each figure overlaps the one behind it.
     for (var i = g.body.length - 1; i >= 0; i -= 1) {
       var seg = g.body[i];
       var x = V.px + (seg.px + (seg.x - seg.px) * t) * CELL;
       var y = V.py + (seg.py + (seg.y - seg.py) * t) * CELL;
       var f = facingFor(seg, g.dir);
-      var art = i === 0 ? playerArt : PW.art.execs[g.execs[i - 1]].cuffed;
+      var art = i === 0 ? officer : PW.art.execs[g.execs[i - 1]].cuffed;
       PW.blit(ctx, art[f.key], Math.round(x), Math.round(y), f.flip);
     }
   }
@@ -170,9 +170,9 @@
     ctx.fillStyle = PW.UI.frameEdge;
     ctx.fillRect(0, HUD_H - 1, V.width, 1);
 
-    PW.text(ctx, 'BUSTED', 8, 12, PW.UI.textDim, 1);
+    PW.text(ctx, 'ARRESTS', 8, 12, PW.UI.textDim, 1);
     var lift = Math.round(pop * 2);
-    PW.text(ctx, String(g.score), 8 + PW.textWidth('BUSTED', 1) + 6, 8 - lift, PW.UI.text, 2);
+    PW.text(ctx, String(g.score), 8 + PW.textWidth('ARRESTS', 1) + 6, 8 - lift, PW.UI.text, 2);
 
     if (best > 0) {
       var label = 'BEST ' + best;
@@ -182,68 +182,28 @@
 
   // ------------------------------------------------------------- screens ---
 
-  function drawSelect(ctx, index, clock) {
-    ctx.fillStyle = 'rgba(8, 11, 17, 0.9)';
-    ctx.fillRect(V.px, V.py, PLAY_W, PLAY_H);
-
-    var cx = V.px + PLAY_W / 2;
-    PW.textCentered(ctx, 'PERP WALK', cx, V.py + 44, PW.UI.text, 3);
-    PW.textCentered(ctx, 'PICK YOUR OFFICER', cx, V.py + 84, PW.UI.textDim, 1);
-
-    var slot = PLAY_W / PW.PLAYERS.length;
-    var rowY = V.py + 146;
-
-    for (var i = 0; i < PW.PLAYERS.length; i += 1) {
-      var sx = Math.round(V.px + slot * i + slot / 2 - PW.SPRITE);
-      var chosen = i === index;
-
-      if (chosen) {
-        var pulse = 0.5 + Math.sin(clock * 6) * 0.25;
-        ctx.fillStyle = 'rgba(245, 185, 66, ' + pulse.toFixed(2) + ')';
-        ctx.fillRect(sx - 6, rowY - 6, PW.SPRITE * 2 + 12, 1);
-        ctx.fillRect(sx - 6, rowY + PW.SPRITE * 2 + 5, PW.SPRITE * 2 + 12, 1);
-        ctx.fillRect(sx - 6, rowY - 6, 1, PW.SPRITE * 2 + 12);
-        ctx.fillRect(sx + PW.SPRITE * 2 + 5, rowY - 6, 1, PW.SPRITE * 2 + 12);
-      }
-
-      ctx.save();
-      if (!chosen) ctx.globalAlpha = 0.45;
-      ctx.drawImage(PW.art.players[i].front, sx, rowY, PW.SPRITE * 2, PW.SPRITE * 2);
-      ctx.restore();
-
-      PW.textCentered(
-        ctx, PW.PLAYERS[i].name,
-        V.px + slot * i + slot / 2, rowY + PW.SPRITE * 2 + 16,
-        chosen ? PW.UI.accent : PW.UI.textDim, 1
-      );
-    }
-
-    PW.textCentered(ctx, 'LEFT / RIGHT TO CHOOSE', cx, V.py + PLAY_H - 84, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'PRESS ENTER TO BEGIN', cx, V.py + PLAY_H - 64, PW.UI.text, 1);
-  }
-
   function drawReady(ctx) {
     // Sits high on the board so it never covers the officer's start cell.
     var cx = V.px + PLAY_W / 2;
     var top = V.py + 46;
     panel(ctx, top, 88);
-    PW.textCentered(ctx, 'WALK THE LOT', cx, top + 12, PW.UI.text, 2);
-    PW.textCentered(ctx, 'COLLAR EVERY EXECUTIVE YOU FIND', cx, top + 38, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'NEVER CROSS YOUR OWN LINE', cx, top + 52, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'SHIFT START', cx, top + 12, PW.UI.text, 2);
+    PW.textCentered(ctx, 'ARREST EVERY EXECUTIVE ON THE PLAZA', cx, top + 38, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'THE COLUMN BEHIND YOU BLOCKS THE WAY', cx, top + 52, PW.UI.textDim, 1);
     PW.textCentered(ctx, 'STEER TO BEGIN', cx, top + 72, PW.UI.accent, 1);
   }
 
   function drawOver(ctx, g, best, fresh) {
     var cx = V.px + PLAY_W / 2;
     panel(ctx, V.py + PLAY_H / 2 - 34, 68);
-    PW.textCentered(ctx, g.score + ' BUSTED', cx, V.py + PLAY_H / 2 - 24, PW.UI.text, 2);
+    PW.textCentered(ctx, g.score + ' ARRESTS', cx, V.py + PLAY_H / 2 - 24, PW.UI.text, 2);
     PW.textCentered(
       ctx,
       fresh ? 'NEW BEST' : 'BEST ' + best,
       cx, V.py + PLAY_H / 2 + 2,
       fresh ? PW.UI.accent : PW.UI.textDim, 1
     );
-    PW.textCentered(ctx, 'SPACE RETRY   C CHANGE OFFICER', cx, V.py + PLAY_H / 2 + 18, PW.UI.textDim, 1);
+    PW.textCentered(ctx, 'SPACE FOR ANOTHER SHIFT', cx, V.py + PLAY_H / 2 + 18, PW.UI.textDim, 1);
   }
 
   function drawCleared(ctx, g) {
@@ -262,20 +222,6 @@
     ctx.fillRect(0, 0, V.width, V.height);
     ctx.drawImage(lotTile, 0, HUD_H);
 
-    if (ui.screen === 'select') {
-      drawSelect(ctx, ui.selectIndex, ui.clock);
-      ctx.fillStyle = PW.UI.barBg;
-      ctx.fillRect(0, 0, V.width, HUD_H);
-      ctx.fillStyle = PW.UI.frameEdge;
-      ctx.fillRect(0, HUD_H - 1, V.width, 1);
-      PW.text(ctx, 'PERP WALK', 8, 12, PW.UI.textDim, 1);
-      if (ui.best > 0) {
-        var lbl = 'BEST ' + ui.best;
-        PW.text(ctx, lbl, V.width - 8 - PW.textWidth(lbl, 1), 12, PW.UI.accent, 1);
-      }
-      return;
-    }
-
     drawTarget(ctx, g, ui.clock);
     drawLine(ctx, g);
     ui.dust.draw(ctx);
@@ -283,6 +229,6 @@
 
     if (g.phase === 'ready') drawReady(ctx);
     else if (g.phase === 'dead') drawOver(ctx, g, ui.best, ui.fresh);
-    else if (g.phase === 'cleared') drawCleared(ctx, g);
+    else if (g.phase === 'docket') drawCleared(ctx, g);
   };
 })(window.PW);

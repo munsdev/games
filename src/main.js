@@ -22,8 +22,6 @@
   var dust = PW.createDust();
 
   var ui = {
-    screen: 'select',
-    selectIndex: 0,
     best: readBest(),
     clock: 0,
     pop: 0,
@@ -32,7 +30,7 @@
     dust: dust
   };
 
-  var game = PW.newGame(0);
+  var game = PW.newGame();
   var lastPhase = '';
   var lastScore = -1;
 
@@ -51,32 +49,19 @@
 
   // ------------------------------------------------------------ commands ---
 
-  function startRun(index) {
-    ui.screen = 'game';
+  function retry() {
     ui.fresh = false;
-    game = PW.newGame(index);
+    game = PW.newGame();
     dust.clear();
     lastPhase = '';
     lastScore = -1;
     audio.start();
-    say(PW.PLAYERS[index].name + ' is on duty. Steer to begin.');
-  }
-
-  function backToSelect() {
-    ui.screen = 'select';
-    dust.clear();
-    lastPhase = '';
-    say('Choose your officer.');
-  }
-
-  function retry() {
-    startRun(game.player);
+    say('Officer on duty. Steer to begin.');
   }
 
   function confirmOrRetry() {
     audio.wake();
-    if (ui.screen === 'select') { startRun(ui.selectIndex); return; }
-    if (game.phase === 'dead' || game.phase === 'cleared') {
+    if (game.phase === 'dead' || game.phase === 'docket') {
       if (game.t >= RETRY_DELAY) retry();
       return;
     }
@@ -85,15 +70,7 @@
 
   function steer(dx, dy) {
     audio.wake();
-    if (ui.screen === 'select') {
-      if (dx !== 0) {
-        ui.selectIndex = (ui.selectIndex + dx + PW.PLAYERS.length) % PW.PLAYERS.length;
-        audio.turn();
-        say(PW.PLAYERS[ui.selectIndex].name);
-      }
-      return;
-    }
-    if (game.phase === 'dead' || game.phase === 'cleared') {
+    if (game.phase === 'dead' || game.phase === 'docket') {
       if (game.t >= RETRY_DELAY) retry();
       return;
     }
@@ -112,15 +89,7 @@
     var key = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
 
     if (key === 'm') { audio.toggle(); return; }
-    if (key === 'r') {
-      if (ui.screen === 'game') { ev.preventDefault(); retry(); }
-      return;
-    }
-    if (key === 'c') {
-      if (ui.screen === 'game') { ev.preventDefault(); backToSelect(); }
-      return;
-    }
-
+    if (key === 'r') { ev.preventDefault(); retry(); return; }
     var dir = KEYS[key];
     if (dir) {
       ev.preventDefault();
@@ -140,19 +109,6 @@
     ev.preventDefault();
     audio.wake();
     var p = screen.toBuffer(ev.clientX, ev.clientY);
-
-    if (ui.screen === 'select') {
-      // Clicking a portrait picks that officer and starts immediately.
-      var slot = (PW.VIEW.width - PW.VIEW.px * 2) / PW.PLAYERS.length;
-      var idx = Math.floor((p.x - PW.VIEW.px) / slot);
-      if (idx >= 0 && idx < PW.PLAYERS.length) {
-        ui.selectIndex = idx;
-        startRun(idx);
-      } else {
-        startRun(ui.selectIndex);
-      }
-      return;
-    }
 
     if (game.phase !== 'playing') { confirmOrRetry(); return; }
 
@@ -174,10 +130,10 @@
   function consumeEvents() {
     for (var i = 0; i < game.events.length; i += 1) {
       var e = game.events[i];
-      if (e.type === 'turn') {
-        audio.turn();
-      } else if (e.type === 'collar') {
-        audio.collar();
+      if (e.type === 'steer') {
+        audio.steer();
+      } else if (e.type === 'arrest') {
+        audio.arrest();
         ui.pop = 1;
         dust.burst(
           PW.VIEW.px + e.x * PW.VIEW.cell + PW.VIEW.cell / 2,
@@ -185,16 +141,16 @@
           PW.UI.accent, 1.2
         );
         if (e.score > ui.best) { ui.best = e.score; writeBest(e.score); ui.fresh = true; }
-      } else if (e.type === 'bust') {
-        audio.bust();
+      } else if (e.type === 'stopped') {
+        audio.stopped();
         ui.shake = 4;
         dust.burst(
           PW.VIEW.px + Math.max(0, Math.min(PW.COLS - 1, e.x)) * PW.VIEW.cell + PW.VIEW.cell / 2,
           PW.VIEW.py + Math.max(0, Math.min(PW.ROWS - 1, e.y)) * PW.VIEW.cell + PW.VIEW.cell / 2,
           PW.UI.danger, 1.8
         );
-      } else if (e.type === 'cleared') {
-        audio.collar();
+      } else if (e.type === 'docket') {
+        audio.arrest();
       }
     }
     game.events.length = 0;
@@ -204,9 +160,9 @@
     if (game.phase !== lastPhase) {
       lastPhase = game.phase;
       if (game.phase === 'playing') say('On patrol.');
-      if (game.phase === 'cleared') say('Full docket. All ' + game.score + ' booked.');
+      if (game.phase === 'docket') say('Full docket. All ' + game.score + ' booked.');
       if (game.phase === 'dead') {
-        say(game.score + ' busted' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space for another run.');
+        say(game.score + ' arrests' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space for another shift.');
       }
       return;
     }
@@ -218,11 +174,9 @@
 
   function update(dt) {
     ui.clock += dt;
-    if (ui.screen === 'game') {
-      PW.advance(game, dt);
-      consumeEvents();
-      announce();
-    }
+    PW.advance(game, dt);
+    consumeEvents();
+    announce();
     dust.update(dt);
     ui.pop = Math.max(0, ui.pop - dt * 3.5);
     ui.shake *= Math.max(0, 1 - 9 * dt);
@@ -236,6 +190,6 @@
     screen.present(sx, sy);
   }
 
-  say('Choose your officer.');
+  say('Officer on duty. Steer to begin.');
   PW.runLoop(update, render);
 })(window.PW);

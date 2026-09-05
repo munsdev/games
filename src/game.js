@@ -66,19 +66,18 @@
     }
     if (free.length === 0) {
       g.target = null;
-      g.phase = 'cleared';
+      g.phase = 'docket';
       g.t = 0;
-      g.events.push({ type: 'cleared', score: g.score });
+      g.events.push({ type: 'docket', score: g.score });
       return;
     }
     var cell = free[Math.floor(Math.random() * free.length)];
     g.target = { x: cell.x, y: cell.y, exec: drawFromBag(g) };
   }
 
-  PW.newGame = function (playerIndex) {
+  PW.newGame = function () {
     var g = {
       phase: 'ready',
-      player: playerIndex || 0,
       body: [],
       execs: [],
       dir: { x: DIRS.right.x, y: DIRS.right.y },
@@ -108,7 +107,7 @@
 
   /* Returns true if the input did something, so the caller knows to click. */
   PW.steer = function (g, dx, dy) {
-    if (g.phase === 'dead' || g.phase === 'cleared') return false;
+    if (g.phase === 'dead' || g.phase === 'docket') return false;
     var last = g.queue.length > 0 ? g.queue[g.queue.length - 1] : g.dir;
     if (dx === -last.x && dy === -last.y) return false;   // no instant reversal
     if (g.phase === 'ready') {
@@ -118,15 +117,15 @@
     if (dx === last.x && dy === last.y) return false;     // already going that way
     if (g.queue.length >= QUEUE_MAX) return false;
     g.queue.push({ x: dx, y: dy });
-    g.events.push({ type: 'turn' });
+    g.events.push({ type: 'steer' });
     return true;
   };
 
-  function bust(g, cause, x, y) {
+  function stop(g, cause, x, y) {
     g.phase = 'dead';
     g.t = 0;
     g.acc = 0;
-    g.events.push({ type: 'bust', cause: cause, x: x, y: y, score: g.score });
+    g.events.push({ type: 'stopped', cause: cause, x: x, y: y, score: g.score });
   }
 
   function step(g) {
@@ -137,7 +136,7 @@
     var ny = head.y + g.dir.y;
 
     if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) {
-      bust(g, 'wall', nx, ny);
+      stop(g, 'fence', nx, ny);
       return;
     }
 
@@ -146,7 +145,7 @@
     var limit = grows ? g.body.length : g.body.length - 1;
     for (var i = 0; i < limit; i += 1) {
       if (g.body[i].x === nx && g.body[i].y === ny) {
-        bust(g, 'line', nx, ny);
+        stop(g, 'column', nx, ny);
         return;
       }
     }
@@ -173,7 +172,7 @@
     else { tail.px = vx; tail.py = vy; }
 
     if (grows) {
-      g.events.push({ type: 'collar', x: nx, y: ny, exec: captured, score: g.score });
+      g.events.push({ type: 'arrest', x: nx, y: ny, exec: captured, score: g.score });
       spawnTarget(g);
     }
   }

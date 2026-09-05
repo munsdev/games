@@ -40,12 +40,12 @@
     }
 
     var api = {
-      turn: function () { tone(620, null, 0.03, 'square', 0.012); },
-      collar: function () {
+      steer: function () { tone(620, null, 0.03, 'square', 0.012); },
+      arrest: function () {
         tone(760, null, 0.06, 'triangle', 0.05);
         setTimeout(function () { tone(1140, null, 0.09, 'triangle', 0.04); }, 55);
       },
-      bust: function () { tone(320, 80, 0.35, 'sawtooth', 0.06); },
+      stopped: function () { tone(320, 80, 0.35, 'sawtooth', 0.06); },
       start: function () {
         tone(520, null, 0.07, 'square', 0.035);
         setTimeout(function () { tone(800, null, 0.1, 'square', 0.03); }, 70);
