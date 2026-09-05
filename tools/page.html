@@ -1,0 +1,296 @@
+<title>Perp Walk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* A single committed visual world: an arcade screen in a dark room. The page
+   paints every colour explicitly so it holds on either host ground. */
+:root {
+  --ground: #07090e;
+  --cabinet: #10151d;
+  --bezel: #1e2632;
+  --edge: #2a3444;
+  --text: #dfe6f2;
+  --dim: #78849a;
+  --accent: #f5b942;
+  --steel: #c9ced8;
+  --display: 'Silkscreen', 'Courier New', monospace;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.room {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 16px 48px;
+}
+
+/* ---- wordmark ---- */
+
+.marquee {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.marquee h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 6vw, 44px);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.marquee .tag {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---- the cabinet ---- */
+
+.cabinet {
+  display: flex;
+  flex-direction: column;
+  background: var(--cabinet);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 24px 60px -20px #000000cc;
+}
+
+.stage {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--ground);
+  border: 1px solid var(--bezel);
+  cursor: default;
+  user-select: none;
+  touch-action: none;
+}
+
+.stage > canvas { display: block; image-rendering: pixelated; }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: #19202b;
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.toggle:hover { background: #212a38; }
+.toggle[aria-pressed="false"] { color: var(--dim); }
+.toggle:focus-visible, .stage:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- key legend ---- */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+
+kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text);
+  background: #19202b;
+  border: 1px solid var(--edge);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 4px 5px;
+}
+
+/* ---- the lot ---- */
+
+.board {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.board h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.board .note { margin: 0; font-size: 12px; color: var(--dim); max-width: 62ch; }
+
+.lot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lot li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  background: var(--cabinet);
+  border: 1px solid var(--bezel);
+  border-radius: 3px;
+}
+
+.lot canvas { image-rendering: pixelated; flex: 0 0 auto; }
+
+.lot .who {
+  font-size: 10px;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.colophon {
+  font-size: 11px;
+  color: var(--dim);
+  text-align: center;
+  max-width: 58ch;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+<div class="room">
+
+  <header class="marquee">
+    <h1>Perp Walk</h1>
+    <p class="tag">Collar every executive &middot; never cross your own line</p>
+  </header>
+
+  <div class="cabinet">
+    <main id="stage" class="stage" tabindex="0" aria-label="Perp Walk playfield"></main>
+    <div class="controls">
+      <button id="sound" class="toggle" type="button" aria-pressed="true">
+        <span aria-hidden="true">&#9834;</span>
+        <span id="soundText">Sound on</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><kbd>&larr;</kbd><kbd>&darr;</kbd><kbd>&uarr;</kbd><kbd>&rarr;</kbd> steer</span>
+    <span><kbd>Space</kbd> start</span>
+    <span><kbd>M</kbd> mute</span>
+    <span><kbd>R</kbd> restart</span>
+    <span><kbd>C</kbd> change officer</span>
+  </div>
+
+  <section class="board">
+    <h2>Today&rsquo;s lot</h2>
+    <p class="note">Ten executives, dealt from a shuffled bag &mdash; the whole roster comes
+      out in a random order before anyone repeats. Each one you collar keeps their own
+      face and clothes, drops whatever they were carrying, and joins the line behind you
+      in handcuffs.</p>
+    <ul id="lot" class="lot"></ul>
+  </section>
+
+  <p class="colophon">Endless. Speed ramps from one step every 0.30s to 0.11s by a score
+    of 30. Your best is kept in this browser.</p>
+
+  <div id="live" class="sr-only" role="status" aria-live="polite"></div>
+</div>
+<script>
+<!--GAME-->
+/* Size the cabinet to a whole multiple of the 394x426 screen, so the pixel
+   grid always lands on exact device pixels with no dead space in the bezel. */
+(function () {
+  var stage = document.getElementById('stage');
+  var W = PW.VIEW.width, H = PW.VIEW.height;
+  function fit() {
+    var availW = Math.min(window.innerWidth - 54, 900);
+    var availH = window.innerHeight - 250;
+    var k = Math.max(1, Math.floor(Math.min(availW / W, availH / H)));
+    stage.style.width = (W * k) + 'px';
+    stage.style.height = (H * k) + 'px';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+
+/* The wanted board draws itself from the same sprites the game just baked,
+   rather than from a separate set of images. */
+(function () {
+  var list = document.getElementById('lot');
+  PW.EXECS.forEach(function (def, i) {
+    var li = document.createElement('li');
+    var cv = document.createElement('canvas');
+    cv.width = PW.SPRITE * 2;
+    cv.height = PW.SPRITE * 2;
+    cv.setAttribute('aria-hidden', 'true');
+    var c = cv.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    c.drawImage(PW.art.execs[i].loose, 0, 0, cv.width, cv.height);
+    var name = document.createElement('span');
+    name.className = 'who';
+    name.textContent = def.name;
+    li.appendChild(cv);
+    li.appendChild(name);
+    list.appendChild(li);
+  });
+})();
+
+</script>

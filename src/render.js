@@ -219,7 +219,7 @@
     }
 
     PW.textCentered(ctx, 'LEFT / RIGHT TO CHOOSE', cx, V.py + PLAY_H - 84, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'ENTER OR SPACE TO START', cx, V.py + PLAY_H - 64, PW.UI.text, 1);
+    PW.textCentered(ctx, 'PRESS ENTER TO BEGIN', cx, V.py + PLAY_H - 64, PW.UI.text, 1);
   }
 
   function drawReady(ctx) {
@@ -230,7 +230,7 @@
     PW.textCentered(ctx, 'WALK THE LOT', cx, top + 12, PW.UI.text, 2);
     PW.textCentered(ctx, 'COLLAR EVERY EXECUTIVE YOU FIND', cx, top + 38, PW.UI.textDim, 1);
     PW.textCentered(ctx, 'NEVER CROSS YOUR OWN LINE', cx, top + 52, PW.UI.textDim, 1);
-    PW.textCentered(ctx, 'ANY ARROW KEY TO SET OFF', cx, top + 72, PW.UI.accent, 1);
+    PW.textCentered(ctx, 'STEER TO BEGIN', cx, top + 72, PW.UI.accent, 1);
   }
 
   function drawOver(ctx, g, best, fresh) {
@@ -249,8 +249,8 @@
   function drawCleared(ctx, g) {
     var cx = V.px + PLAY_W / 2;
     panel(ctx, V.py + PLAY_H / 2 - 26, 52);
-    PW.textCentered(ctx, 'LOT CLEARED', cx, V.py + PLAY_H / 2 - 16, PW.UI.accent, 2);
-    PW.textCentered(ctx, 'ALL ' + g.score + ' IN THE LINE', cx, V.py + PLAY_H / 2 + 8, PW.UI.text, 1);
+    PW.textCentered(ctx, 'FULL DOCKET', cx, V.py + PLAY_H / 2 - 16, PW.UI.accent, 2);
+    PW.textCentered(ctx, 'ALL ' + g.score + ' BOOKED', cx, V.py + PLAY_H / 2 + 8, PW.UI.text, 1);
   }
 
   // --------------------------------------------------------------- entry ---

@@ -59,7 +59,7 @@
     lastPhase = '';
     lastScore = -1;
     audio.start();
-    say(PW.PLAYERS[index].name + ' selected. Press an arrow key to set off.');
+    say(PW.PLAYERS[index].name + ' is on duty. Steer to begin.');
   }
 
   function backToSelect() {
@@ -203,10 +203,10 @@
   function announce() {
     if (game.phase !== lastPhase) {
       lastPhase = game.phase;
-      if (game.phase === 'playing') say('Walking.');
-      if (game.phase === 'cleared') say('Lot cleared. All ' + game.score + ' in the line.');
+      if (game.phase === 'playing') say('On patrol.');
+      if (game.phase === 'cleared') say('Full docket. All ' + game.score + ' booked.');
       if (game.phase === 'dead') {
-        say(game.score + ' busted' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space to go again.');
+        say(game.score + ' busted' + (ui.best > 0 ? ', best ' + ui.best : '') + '. Press space for another run.');
       }
       return;
     }
