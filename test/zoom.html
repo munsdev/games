@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Zoom</title>
+<style>body{background:#151a22;margin:0;padding:8px;font:11px monospace;color:#cfd6e2}canvas{image-rendering:pixelated}</style>
+</head><body><canvas id="c" width="1160" height="620"></canvas>
+<script src="../src/palette.js"></script><script src="../src/sprites.js"></script>
+<script src="../src/charedit.js"></script>
+<script>
+var ctx=document.getElementById('c').getContext('2d');ctx.imageSmoothingEnabled=false;
+var Z=10,S=24;
+function base(x){var d={id:'x',name:'X',skin:'tan',build:'normal',face:'square',hair:'brown',
+  hairStyle:'buzz',shirt:'#4a5a7c',sleeves:'long',pants:'#2b3340',shoes:'#181c24'};
+  for(var k in x)d[k]=x[k];return d;}
+var y=16;
+function band(title,items,facings){
+  ctx.fillStyle='#f5b942';ctx.font='12px monospace';ctx.fillText(title,6,y);y+=6;
+  var w=(facings||['front']).length*S*Z+20;
+  items.forEach(function(it,i){
+    var a=PW.bake(it.def,{cuffed:false});
+    (facings||['front']).forEach(function(f,k){ctx.drawImage(a[f],6+i*w+k*S*Z,y,S*Z,S*Z);});
+    ctx.fillStyle='#9aa4b4';ctx.font='11px monospace';ctx.fillText(it.label,6+i*w,y+S*Z+13);
+  });
+  y+=S*Z+26;
+}
+band('AFRO', [{label:'afro',def:base({hairStyle:'afro'})}], ['front','side','back']);
+band('MAKEUP', ['none','shadow','liner','full'].map(function(m){
+  return {label:m,def:base({makeup:m,makeupColor:'#c06a9a',makeupColor2:'#4a1f38'})};}));
+band('GLASSES', ['round','square','halfRim','aviator'].map(function(g){
+  return {label:g,def:base({glasses:g})};}));
+</script></body></html>

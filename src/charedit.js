@@ -13,24 +13,30 @@
   C.SKINS = ['pale', 'peach', 'olive', 'tan', 'brown', 'deep'];
   C.HAIRS = ['black', 'dark', 'brown', 'ginger', 'blonde', 'grey', 'white'];
   C.HAIR_STYLES = ['buzz', 'crop', 'slick', 'swoop', 'pomp', 'rough', 'curls', 'afro', 'bun', 'long', 'bald'];
+  C.FACES = ['square', 'round', 'tapered', 'slim', 'broad'];
+  C.BROWS = ['none', 'thin', 'thick', 'arched', 'angled'];
   C.BEARDS = ['none', 'full', 'goatee', 'stubble'];
-  C.EYES = ['plain', 'round', 'shades'];
-  C.MAKEUP = ['none', 'shadow', 'liner', 'both'];
+  C.MAKEUP = ['none', 'shadow', 'liner', 'full'];
+  C.GLASSES = ['none', 'round', 'square', 'halfRim', 'shades', 'roundShades', 'aviator'];
   C.HATS = ['none', 'cap', 'beanie', 'cowboy', 'police'];
   C.BUILDS = ['normal', 'heavy', 'lean'];
   C.SLEEVES = ['long', 'short'];
   C.PATTERNS = ['none', 'stripes', 'bands', 'check', 'dots'];
+  C.GRAPHICS = ['none', 'smiley', 'thumbsup', 'heart', 'star', 'flower', 'snake', 'spider', 'skull', 'bolt'];
   C.PROPS = ['none', 'briefcase', 'laptop', 'cup', 'phone', 'pills', 'keyring', 'cigar', 'derrick'];
 
-  var OPT_COLORS = ['tie', 'lapels', 'belt', 'backText'];
+  // Fields that are only written when switched on.
+  var OPT_COLORS = ['eyeColor', 'browColor', 'makeupColor2', 'glassesColor',
+                    'lensColor', 'tie', 'lapels', 'belt', 'backText'];
 
   var GROUPS = [
     ['Identity', [{ k: 'name', t: 'text' }]],
     ['Body', [
       { k: 'skin', t: 'select', opts: C.SKINS },
-      { k: 'build', t: 'select', opts: C.BUILDS }
+      { k: 'build', t: 'select', opts: C.BUILDS },
+      { k: 'face', t: 'select', opts: C.FACES }
     ]],
-    ['Head', [
+    ['Hair', [
       { k: 'hairStyle', t: 'select', opts: C.HAIR_STYLES },
       { k: 'hair', t: 'select', opts: C.HAIRS },
       { k: 'beardStyle', t: 'select', opts: C.BEARDS },
@@ -39,15 +45,24 @@
       { k: 'hatColor', t: 'color' }
     ]],
     ['Eyes', [
-      { k: 'eyes', t: 'select', opts: C.EYES },
+      { k: 'brows', t: 'select', opts: C.BROWS },
+      { k: 'browColor', t: 'optcolor' },
       { k: 'eyeColor', t: 'optcolor' },
       { k: 'makeup', t: 'select', opts: C.MAKEUP },
-      { k: 'makeupColor', t: 'color' }
+      { k: 'makeupColor', t: 'color' },
+      { k: 'makeupColor2', t: 'optcolor' }
+    ]],
+    ['Glasses', [
+      { k: 'glasses', t: 'select', opts: C.GLASSES },
+      { k: 'glassesColor', t: 'optcolor' },
+      { k: 'lensColor', t: 'optcolor' }
     ]],
     ['Clothes', [
       { k: 'shirt', t: 'color' },
       { k: 'pattern', t: 'select', opts: C.PATTERNS },
       { k: 'patternColor', t: 'color' },
+      { k: 'graphic', t: 'select', opts: C.GRAPHICS },
+      { k: 'graphicColor', t: 'color' },
       { k: 'sleeves', t: 'select', opts: C.SLEEVES },
       { k: 'pants', t: 'color' },
       { k: 'shoes', t: 'color' }
@@ -64,21 +79,28 @@
   ];
 
   var LABELS = {
-    name: 'Name', skin: 'Skin', build: 'Build', hairStyle: 'Hair', hair: 'Hair colour',
-    beardStyle: 'Beard', beardColor: 'Beard colour', hat: 'Hat', hatColor: 'Hat colour',
-    eyes: 'Eyes', eyeColor: 'Eye colour', makeup: 'Makeup', makeupColor: 'Makeup colour',
-    shirt: 'Shirt', pattern: 'Pattern', patternColor: 'Pattern colour', sleeves: 'Sleeves',
+    name: 'Name', skin: 'Skin', build: 'Build', face: 'Face shape',
+    hairStyle: 'Hair', hair: 'Hair colour', beardStyle: 'Beard', beardColor: 'Beard colour',
+    hat: 'Hat', hatColor: 'Hat colour',
+    brows: 'Brows', browColor: 'Brow colour', eyeColor: 'Eye colour',
+    makeup: 'Makeup', makeupColor: 'Upper colour', makeupColor2: 'Lower colour',
+    glasses: 'Glasses', glassesColor: 'Frames', lensColor: 'Lenses',
+    shirt: 'Shirt', pattern: 'Pattern', patternColor: 'Pattern colour',
+    graphic: 'Graphic', graphicColor: 'Graphic colour', sleeves: 'Sleeves',
     pants: 'Trousers', shoes: 'Shoes', tie: 'Tie', lapels: 'Lapels', belt: 'Belt',
     backText: 'Back marks', chain: 'Chain', badge: 'Badge', prop: 'Prop'
   };
 
   C.defaults = function () {
     return {
-      name: 'MY OFFICER', skin: 'olive', build: 'normal',
+      name: 'MY OFFICER', skin: 'olive', build: 'normal', face: 'square',
       hairStyle: 'swoop', hair: 'brown', beardStyle: 'none', beardColor: 'brown',
       hat: 'none', hatColor: '#2b3a4a',
-      eyes: 'plain', eyeColor: null, makeup: 'none', makeupColor: '#8a4a7a',
-      shirt: '#33436b', pattern: 'none', patternColor: '#5a6a8c', sleeves: 'long',
+      brows: 'thin', browColor: null, eyeColor: null,
+      makeup: 'none', makeupColor: '#8a4a7a', makeupColor2: null,
+      glasses: 'none', glassesColor: null, lensColor: null,
+      shirt: '#33436b', pattern: 'none', patternColor: '#5a6a8c',
+      graphic: 'none', graphicColor: '#f2f4f8', sleeves: 'long',
       pants: '#232c42', shoes: '#141821',
       tie: null, lapels: null, belt: '#141821', backText: null,
       chain: false, badge: true, prop: 'none'
@@ -94,16 +116,17 @@
   C.toDef = function (S) {
     var d = {
       id: slug(S.name), name: String(S.name).toUpperCase(),
-      skin: S.skin, build: S.build, hairStyle: S.hairStyle,
-      eyes: S.eyes, shirt: S.shirt, sleeves: S.sleeves,
-      pants: S.pants, shoes: S.shoes
+      skin: S.skin, build: S.build, face: S.face, hairStyle: S.hairStyle,
+      shirt: S.shirt, sleeves: S.sleeves, pants: S.pants, shoes: S.shoes
     };
     if (S.hairStyle !== 'bald') d.hair = S.hair;
     if (S.beardStyle !== 'none') d.beard = { style: S.beardStyle, color: S.beardColor };
     if (S.hat !== 'none') { d.hat = S.hat; d.hatColor = S.hatColor; }
-    if (S.eyeColor) d.eyeColor = S.eyeColor;
-    if (S.makeup && S.makeup !== 'none') { d.makeup = S.makeup; d.makeupColor = S.makeupColor; }
-    if (S.pattern && S.pattern !== 'none') { d.pattern = S.pattern; d.patternColor = S.patternColor; }
+    if (S.brows !== 'none') d.brows = S.brows;
+    if (S.makeup !== 'none') { d.makeup = S.makeup; d.makeupColor = S.makeupColor; }
+    if (S.glasses !== 'none') d.glasses = S.glasses;
+    if (S.pattern !== 'none') { d.pattern = S.pattern; d.patternColor = S.patternColor; }
+    if (S.graphic !== 'none') { d.graphic = S.graphic; d.graphicColor = S.graphicColor; }
     OPT_COLORS.forEach(function (k) { if (S[k]) d[k] = S[k]; });
     if (S.chain) d.chain = true;
     if (S.badge) d.badge = true;
@@ -111,25 +134,28 @@
     return d;
   };
 
-  // ...and back again, tolerating the older `pinstripe` field.
+  // ...and back again, tolerating eyewear held in `eyes` and the old `pinstripe`.
   C.fromDef = function (d) {
     var S = C.defaults();
     S.name = d.name || 'CHARACTER';
     S.skin = d.skin || 'tan';
     S.build = d.build || 'normal';
+    S.face = d.face || 'square';
     S.hairStyle = d.hairStyle || 'buzz';
     S.hair = d.hair || 'black';
     S.beardStyle = d.beard ? d.beard.style : 'none';
     S.beardColor = (d.beard && d.beard.color) || 'brown';
     S.hat = d.hat || 'none';
     S.hatColor = d.hatColor || '#2b3a4a';
-    S.eyes = d.eyes || 'plain';
-    S.eyeColor = d.eyeColor || null;
+    S.brows = d.brows || 'none';
     S.makeup = d.makeup || 'none';
     S.makeupColor = d.makeupColor || '#8a4a7a';
+    S.glasses = d.glasses || (d.eyes === 'round' ? 'round' : d.eyes === 'shades' ? 'shades' : 'none');
     S.shirt = d.shirt || '#33436b';
     S.pattern = d.pattern || (d.pinstripe ? 'stripes' : 'none');
     S.patternColor = d.patternColor || d.pinstripe || '#5a6a8c';
+    S.graphic = d.graphic || 'none';
+    S.graphicColor = d.graphicColor || '#f2f4f8';
     S.sleeves = d.sleeves || 'long';
     S.pants = d.pants || '#232c42';
     S.shoes = d.shoes || '#141821';
@@ -143,24 +169,39 @@
   function q(v) { return typeof v === 'string' ? "'" + v + "'" : String(v); }
 
   C.source = function (d) {
+    function line(pairs) { return '  ' + pairs.filter(Boolean).join(', ') + ','; }
     var L = [];
-    L.push('  id: ' + q(d.id) + ', name: ' + q(d.name) + ',');
-    var body = ['skin: ' + q(d.skin), 'build: ' + q(d.build)];
-    if (d.hair) body.push('hair: ' + q(d.hair));
-    body.push('hairStyle: ' + q(d.hairStyle));
-    L.push('  ' + body.join(', ') + ',');
+    L.push(line(['id: ' + q(d.id), 'name: ' + q(d.name)]));
+    L.push(line([
+      'skin: ' + q(d.skin), 'build: ' + q(d.build), 'face: ' + q(d.face),
+      d.hair && 'hair: ' + q(d.hair), 'hairStyle: ' + q(d.hairStyle)
+    ]));
     if (d.beard) L.push('  beard: { style: ' + q(d.beard.style) + ', color: ' + q(d.beard.color) + ' },');
-    if (d.hat) L.push('  hat: ' + q(d.hat) + ', hatColor: ' + q(d.hatColor) + ',');
-    var eye = ['eyes: ' + q(d.eyes)];
-    if (d.eyeColor) eye.push('eyeColor: ' + q(d.eyeColor));
-    if (d.makeup) eye.push('makeup: ' + q(d.makeup) + ', makeupColor: ' + q(d.makeupColor));
-    L.push('  ' + eye.join(', ') + ',');
+    if (d.hat) L.push(line(['hat: ' + q(d.hat), 'hatColor: ' + q(d.hatColor)]));
+    var eye = [
+      d.brows && 'brows: ' + q(d.brows),
+      d.browColor && 'browColor: ' + q(d.browColor),
+      d.eyeColor && 'eyeColor: ' + q(d.eyeColor),
+      d.makeup && 'makeup: ' + q(d.makeup),
+      d.makeup && 'makeupColor: ' + q(d.makeupColor),
+      d.makeupColor2 && 'makeupColor2: ' + q(d.makeupColor2)
+    ].filter(Boolean);
+    if (eye.length) L.push(line(eye));
+    var spec = [
+      d.glasses && 'glasses: ' + q(d.glasses),
+      d.glassesColor && 'glassesColor: ' + q(d.glassesColor),
+      d.lensColor && 'lensColor: ' + q(d.lensColor)
+    ].filter(Boolean);
+    if (spec.length) L.push(line(spec));
     var wear = ['shirt: ' + q(d.shirt), 'sleeves: ' + q(d.sleeves)];
-    if (d.pattern) wear.push('pattern: ' + q(d.pattern) + ', patternColor: ' + q(d.patternColor));
-    OPT_COLORS.forEach(function (k) { if (d[k]) wear.push(k + ': ' + q(d[k])); });
+    if (d.pattern) wear.push('pattern: ' + q(d.pattern), 'patternColor: ' + q(d.patternColor));
+    if (d.graphic) wear.push('graphic: ' + q(d.graphic), 'graphicColor: ' + q(d.graphicColor));
+    ['tie', 'lapels', 'belt', 'backText'].forEach(function (k) {
+      if (d[k]) wear.push(k + ': ' + q(d[k]));
+    });
     if (d.chain) wear.push('chain: true');
     if (d.badge) wear.push('badge: true');
-    L.push('  ' + wear.join(', ') + ',');
+    L.push(line(wear));
     var tail = ['pants: ' + q(d.pants), 'shoes: ' + q(d.shoes)];
     if (d.prop) tail.push('prop: ' + q(d.prop));
     L.push('  ' + tail.join(', '));

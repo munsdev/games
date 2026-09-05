@@ -14,33 +14,62 @@ Required: `id`, `name`, `skin`, `shirt`, `pants`, `shoes`. Everything else optio
 | `name` | uppercase, max 18 chars |
 | `skin` | `pale` `peach` `olive` `tan` `brown` `deep` |
 | `build` | `normal` `heavy` `lean` |
-| `hair` | `black` `dark` `brown` `ginger` `blonde` `grey` `white` |
+| `face` | `square` `round` `tapered` `slim` `broad` |
+
+### Hair
+
+| Field | Values |
+| --- | --- |
 | `hairStyle` | `buzz` `crop` `slick` `swoop` `pomp` `rough` `curls` `afro` `bun` `long` `bald` |
+| `hair` | `black` `dark` `brown` `ginger` `blonde` `grey` `white` |
 | `beard` | `{ style: 'full'\|'goatee'\|'stubble', color: <hair value> }` |
-| `eyes` | `plain` `round` `shades` |
-| `eyeColor` | hex — iris colour; omit for the default |
-| `makeup` | `shadow` `liner` `both` — needs `makeupColor` |
-| `makeupColor` | hex |
 | `hat` | `cap` `beanie` `cowboy` `police` — requires `hatColor` |
 | `hatColor` | hex |
+
+### Eyes
+
+| Field | Values |
+| --- | --- |
+| `brows` | `thin` `thick` `arched` `angled` |
+| `browColor` | hex — defaults to the hair colour |
+| `eyeColor` | hex — iris colour |
+| `makeup` | `shadow` (lid), `liner` (under-eye and wing), `full` (both) |
+| `makeupColor` | hex — the upper/lid colour |
+| `makeupColor2` | hex — the lower/liner colour; defaults to `makeupColor` |
+| `glasses` | `round` `square` `halfRim` `shades` `roundShades` `aviator` |
+| `glassesColor` | hex — frames |
+| `lensColor` | hex — tint, on the three sunglasses kinds |
+
+`shades`, `roundShades` and `aviator` are opaque: they hide the eyes and any makeup.
+
+### Clothes
+
+| Field | Values |
+| --- | --- |
 | `shirt` | hex |
 | `sleeves` | `long` `short` |
-| `pants` | hex |
-| `shoes` | hex |
-| `prop` | `briefcase` `laptop` `cup` `phone` `pills` `keyring` `cigar` `derrick` |
-| `tie` | hex |
-| `lapels` | hex |
 | `pattern` | `stripes` `bands` `check` `dots` — needs `patternColor` |
 | `patternColor` | hex |
+| `graphic` | `smiley` `thumbsup` `heart` `star` `flower` `snake` `spider` `skull` `bolt` |
+| `graphicColor` | hex |
+| `pants` | hex |
+| `shoes` | hex |
+| `tie` | hex |
+| `lapels` | hex |
+| `belt` | hex |
+| `backText` | hex — two marks across the shoulder blades, visible only from behind |
 | `chain` | `true` |
 | `badge` | `true` |
-| `belt` | hex |
-| `backText` | hex |
+| `prop` | `briefcase` `laptop` `cup` `phone` `pills` `keyring` `cigar` `derrick` |
+
+A `prop` is held in the right hand and dropped once the character is handcuffed;
+`graphic` is printed on the chest and stays.
 
 ## Rules
 
 - Sprites are 24px. Each character gets about three legible features: silhouette
-  (build + hat + hair), one signature colour (`shirt`), one prop or torso detail.
+  (build + face + hat + hair), one signature colour (`shirt`), one prop, graphic
+  or torso detail.
 - Assign `shirt` colours across the whole set at once. Similar build + similar
   shirt colour = indistinguishable in motion.
 - Types, not real people. No likenesses of actual individuals.
@@ -53,10 +82,11 @@ Emit only this, one object per character, comma-separated. No prose.
 ```js
 {
   id: 'shipping', name: 'PORT MAGNATE',
-  skin: 'olive', build: 'heavy', hair: 'grey', hairStyle: 'slick',
+  skin: 'olive', build: 'heavy', face: 'broad', hair: 'grey', hairStyle: 'slick',
   hat: 'cap', hatColor: '#2b3a4a',
-  eyes: 'plain', eyeColor: '#3f6b52',
-  shirt: '#3d5a6c', sleeves: 'long', pattern: 'stripes', patternColor: '#2c4351', chain: true,
+  brows: 'thick', glasses: 'square',
+  shirt: '#3d5a6c', sleeves: 'long', pattern: 'stripes', patternColor: '#2c4351',
+  lapels: '#2c4351', chain: true,
   pants: '#2b3340', shoes: '#181c24', prop: 'briefcase'
 },
 ```
