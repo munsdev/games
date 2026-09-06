@@ -37,7 +37,15 @@
       view.style.height = box.height + 'px';
       vctx.imageSmoothingEnabled = false;
 
-      scale = Math.max(1, Math.floor(Math.min(pxW / W, pxH / H)));
+      /* Whole-number scaling keeps every pixel exactly square, but on a phone
+         the next whole step can be a third of the screen away: at dpr 3 on a
+         360px-wide screen a 394px buffer only reaches 2x, so the board draws
+         at 263 CSS px and the characters land at 16px. Above 2x device
+         density a fractional step is not visible, so fill the space instead
+         of throwing a third of it away. */
+      var raw = Math.min(pxW / W, pxH / H);
+      var whole = Math.max(1, Math.floor(raw));
+      scale = (dpr >= 2 && raw - whole > 0.15) ? raw : whole;
       offX = Math.floor((pxW - W * scale) / 2);
       offY = Math.floor((pxH - H * scale) / 2);
     }
