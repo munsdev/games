@@ -11,6 +11,7 @@
   'use strict';
 
   var BEST_KEY = 'otl.best';
+  var CUSTOM_KEY = 'otl.custom';
   var RETRY_DELAY = 0.6;
 
   window.OnTheList = window.OnTheList || {};
@@ -91,9 +92,27 @@
       try { window.localStorage.setItem(BEST_KEY, String(v)); } catch (e) { /* private mode */ }
     }
 
-    var entries = PW.PLAYERS.map(function (d, i) {
-      return { name: d.name, art: PW.art.players[i] };
-    });
+    function readCustom() {
+      try {
+        var raw = window.localStorage.getItem(CUSTOM_KEY);
+        if (!raw) return null;
+        var d = JSON.parse(raw);
+        return d && typeof d === 'object' && d.shirt ? d : null;
+      } catch (e) { return null; }
+    }
+
+    var custom = readCustom();
+
+    /* The presets, plus whatever the player built. */
+    function buildEntries() {
+      var list = PW.PLAYERS.map(function (d, i) {
+        return { name: d.name, art: PW.art.players[i] };
+      });
+      if (custom) list.push({ name: custom.name || 'MINE', art: PW.bake(custom, { cuffed: false }) });
+      return list;
+    }
+
+    var entries = buildEntries();
 
     var ui = {
       screen: 'game',
@@ -116,29 +135,33 @@
     // ------------------------------------------------------------ officers ---
 
     var pickWrap = el('officers');
-    entries.forEach(function (entry, i) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ol-officer' + (i === 0 ? ' is-on' : '');
-      var cv = document.createElement('canvas');
-      cv.width = PW.SPRITE * 2;
-      cv.height = PW.SPRITE * 2;
-      var c = cv.getContext('2d');
-      c.imageSmoothingEnabled = false;
-      c.drawImage(entry.art.front, 0, 0, cv.width, cv.height);
-      var name = document.createElement('span');
-      name.textContent = entry.name;
-      btn.appendChild(cv);
-      btn.appendChild(name);
-      btn.addEventListener('click', function () {
-        ui.selectIndex = i;
-        ui.playerArt = entry.art;
-        pickWrap.querySelectorAll('.ol-officer').forEach(function (b) { b.classList.remove('is-on'); });
-        btn.classList.add('is-on');
-        audio.steer();
+
+    function renderOfficers() {
+      pickWrap.innerHTML = '';
+      entries.forEach(function (entry, i) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ol-officer' + (i === ui.selectIndex ? ' is-on' : '');
+        var cv = document.createElement('canvas');
+        cv.width = PW.SPRITE * 2;
+        cv.height = PW.SPRITE * 2;
+        var c = cv.getContext('2d');
+        c.imageSmoothingEnabled = false;
+        c.drawImage(entry.art.front, 0, 0, cv.width, cv.height);
+        var name = document.createElement('span');
+        name.textContent = entry.name;
+        btn.appendChild(cv);
+        btn.appendChild(name);
+        btn.addEventListener('click', function () {
+          ui.selectIndex = i;
+          ui.playerArt = entry.art;
+          pickWrap.querySelectorAll('.ol-officer').forEach(function (b) { b.classList.remove('is-on'); });
+          btn.classList.add('is-on');
+          audio.steer();
+        });
+        pickWrap.appendChild(btn);
       });
-      pickWrap.appendChild(btn);
-    });
+    }
 
     // -------------------------------------------------------------- overlays ---
 
@@ -147,8 +170,72 @@
       if (node) node.hidden = !on;
     }
 
+    /* The same editor the standalone page and the forge mount, in an overlay
+       sized to the embed. Saving writes to this origin's localStorage, so a
+       character survives between visits to the page. */
+    var maker = null;
+    function openMaker() {
+      audio.wake();
+      show('ovTitle', false);
+      show('ovMaker', true);
+      if (maker) return;
+      var box = el('myFacings');
+      maker = PW.createEditor(el('myControls'), {
+        value: custom || undefined,
+        onChange: function (def) {
+          var art = PW.bake(def, { cuffed: false });
+          box.innerHTML = '';
+          ['front', 'side', 'back'].forEach(function (f) {
+            var wrap = document.createElement('div');
+            var cv = document.createElement('canvas');
+            cv.width = PW.SPRITE * 3;
+            cv.height = PW.SPRITE * 3;
+            var c = cv.getContext('2d');
+            c.imageSmoothingEnabled = false;
+            c.drawImage(art[f], 0, 0, cv.width, cv.height);
+            wrap.appendChild(cv);
+            box.appendChild(wrap);
+          });
+        }
+      });
+    }
+
+    function closeMaker() {
+      show('ovMaker', false);
+      show('ovTitle', true);
+    }
+
+    function note(msg) {
+      var n = el('myNote');
+      if (n) n.textContent = msg || '';
+    }
+
+    function saveCustom() {
+      var def = maker.get();
+      custom = def;
+      try { window.localStorage.setItem(CUSTOM_KEY, JSON.stringify(def)); }
+      catch (e) { note('This browser will not keep them, but they are in the line-up for now.'); }
+      entries = buildEntries();
+      ui.selectIndex = entries.length - 1;
+      ui.playerArt = entries[ui.selectIndex].art;
+      renderOfficers();
+      note(def.name + ' is in the line-up.');
+      closeMaker();
+    }
+
+    function clearCustom() {
+      custom = null;
+      try { window.localStorage.removeItem(CUSTOM_KEY); } catch (e) { /* private mode */ }
+      entries = buildEntries();
+      if (ui.selectIndex >= entries.length) ui.selectIndex = 0;
+      ui.playerArt = entries[ui.selectIndex].art;
+      renderOfficers();
+      note('Removed.');
+    }
+
     function toTitle() {
       phase = 'title';
+      show('ovMaker', false);
       game = PW.newGame();
       dust.clear();
       ui.fresh = false;
@@ -296,6 +383,10 @@
     stage.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
 
     el('btnStart').addEventListener('click', startRun);
+    el('btnMake').addEventListener('click', openMaker);
+    el('btnMakerBack').addEventListener('click', closeMaker);
+    el('btnSaveMine').addEventListener('click', saveCustom);
+    el('btnClearMine').addEventListener('click', clearCustom);
     el('btnPause').addEventListener('click', function () { pause(phase === 'playing'); });
     el('btnResume').addEventListener('click', function () { pause(false); });
     el('btnQuit').addEventListener('click', toTitle);
@@ -367,6 +458,7 @@
       requestAnimationFrame(frame);
     }
 
+    renderOfficers();
     toTitle();
     requestAnimationFrame(frame);
   };

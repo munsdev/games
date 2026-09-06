@@ -12,7 +12,7 @@ var fs = require('fs');
 var path = require('path');
 
 var ROOT = path.join(__dirname, '..');
-var MODULES = ['palette', 'pixel', 'font', 'sprites', 'roster', 'audio', 'game', 'render'];
+var MODULES = ['palette', 'pixel', 'font', 'sprites', 'charedit', 'roster', 'audio', 'game', 'render'];
 
 var out = process.argv[2] || path.join(ROOT, 'dist', 'cta', 'on-the-list');
 fs.mkdirSync(out, { recursive: true });
