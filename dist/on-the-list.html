@@ -208,6 +208,11 @@ kbd {
 
 .maker { display: flex; flex-direction: column; gap: 12px; }
 .makerGrid { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(260px, 320px); gap: 16px; align-items: start; }
+
+/* The preview sticks while the control list scrolls past it. */
+@media (min-width: 701px) {
+  .makerPreview { position: sticky; top: 12px; align-self: start; }
+}
 @media (max-width: 700px) { .makerGrid { grid-template-columns: 1fr; } }
 
 .facings { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -284,7 +289,7 @@ kbd {
     <p class="note">Build someone and they join the line-up on the title screen. Saved in
       this browser, so they are still there next time you play.</p>
     <div class="makerGrid">
-      <div>
+      <div class="makerPreview">
         <div class="facings" id="myFacings"></div>
         <div class="makerBar">
           <button type="button" class="btn primary" id="saveMine">Save to line-up</button>
@@ -770,6 +775,7 @@ window.PW = window.PW || {};
   /* The eyes and the lenses share one geometry: each eye sits at the centre of
      a 3x4 cell, so a makeup ring and a spectacle frame occupy the same box. */
   var EYE_L = 9, EYE_R = 14, EYE_Y = 6;
+  var FRAME = '#8a93a6';   // frames must contrast with the eye they surround
 
   var LEGACY_MAKEUP = { shadow: ['top'], liner: ['bottom', 'outer'], full: ['top', 'bottom', 'outer'] };
 
@@ -824,7 +830,7 @@ window.PW = window.PW || {};
   /* Front lenses are the 3x3 box around each eye, bridged across the nose. */
   function glasses(s, o, kind, frameColor, lensColor) {
     if (!kind) return;
-    var fr = frameColor || '#2b3140';
+    var fr = frameColor || FRAME;
     var tint = lensColor || '#181c24';
     var L = EYE_L - 1, R = EYE_R - 1, Y = EYE_Y - 1;
 
@@ -869,37 +875,35 @@ window.PW = window.PW || {};
 
   /* In profile only the near lens shows, and it needs a temple arm running
      back to the ear or it reads as loose pixels on the cheek. */
+  /* In profile only the near lens shows, and it needs a temple arm running
+     back to the ear or it reads as loose pixels on the cheek. */
   function glassesSide(s, o, kind, frameColor, lensColor) {
     if (!kind) return;
-    var fr = frameColor || '#2b3140';
+    var fr = frameColor || FRAME;
     var tint = lensColor || '#181c24';
     var x = EYE_R - 1, Y = EYE_Y - 1;
+
+    s.det(o + 11, EYE_Y, 2, 1, fr);   // temple arm, back to the ear
 
     if (kind === 'round') {
       s.det(o + EYE_R, Y, 1, 1, fr); s.det(o + EYE_R, Y + 2, 1, 1, fr);
       s.det(o + x, EYE_Y, 1, 1, fr); s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'square') {
       s.det(o + x, Y, 3, 1, fr); s.det(o + x, Y + 2, 3, 1, fr);
       s.det(o + x, EYE_Y, 1, 1, fr); s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'halfRim') {
       s.det(o + x, Y, 3, 1, fr);
       s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     } else if (kind === 'shades') {
       s.det(o + x, Y, 3, 3, tint);
       s.det(o + x, Y - 1, 3, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     } else if (kind === 'roundShades') {
       s.det(o + x, EYE_Y, 3, 1, tint);
       s.det(o + EYE_R, Y, 1, 1, tint); s.det(o + EYE_R, Y + 2, 1, 1, tint);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'aviator') {
       s.det(o + x, Y, 3, 2, tint);
       s.det(o + EYE_R, Y + 2, 1, 1, tint);
       s.det(o + x, Y - 1, 3, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     }
   }
 
@@ -1120,8 +1124,9 @@ window.PW = window.PW || {};
     if (!tinted(specs)) {
       makeup(s, o, def);
       var iris = def.eyeColor || '#1f2430';
-      s.det(o + EYE_L, EYE_Y, 1, 2, iris);
-      s.det(o + EYE_R, EYE_Y, 1, 2, iris);
+      var eh = specs ? 1 : 2;
+      s.det(o + EYE_L, EYE_Y, 1, eh, iris);
+      s.det(o + EYE_R, EYE_Y, 1, eh, iris);
     }
     glasses(s, o, specs, def.glassesColor, def.lensColor);
     brows(s, o, def, hc, skin);
@@ -1174,7 +1179,7 @@ window.PW = window.PW || {};
     var sspecs = specsOf(def);
     if (!tinted(sspecs)) {
       makeupSide(s, o, def);
-      s.det(o + EYE_R, EYE_Y, 1, 2, def.eyeColor || '#1f2430');
+      s.det(o + EYE_R, EYE_Y, 1, sspecs ? 1 : 2, def.eyeColor || '#1f2430');
     }
     glassesSide(s, o, sspecs, def.glassesColor, def.lensColor);
     if (def.brows && def.brows !== 'none') {
@@ -1445,6 +1450,74 @@ window.PW = window.PW || {};
     S.prop = d.prop || 'none';
     return S;
   };
+
+
+  /* Every key toDef can emit. The consistency test checks this against what
+     the sprite renderer actually reads. */
+  C.KEYS = ['id', 'name', 'skin', 'build', 'face', 'hair', 'hairStyle', 'beard',
+            'hat', 'hatColor', 'brows', 'browColor', 'eyeColor', 'makeup',
+            'makeupColor', 'makeupColor2', 'glasses', 'glassesColor', 'lensColor',
+            'shirt', 'sleeves', 'pattern', 'patternColor', 'graphic', 'graphicColor',
+            'tie', 'lapels', 'belt', 'backText', 'chain', 'badge', 'pants', 'shoes', 'prop'];
+
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  function hue() {
+    var h = Math.floor(Math.random() * 360);
+    var sat = (25 + Math.random() * 45) / 100;
+    var lum = (22 + Math.random() * 45) / 100;
+    var k = function (n) { return (n + h / 30) % 12; };
+    var a = sat * Math.min(lum, 1 - lum);
+    var f = function (n) { return lum - a * Math.max(-1, Math.min(Math.min(k(n) - 3, 9 - k(n)), 1)); };
+    var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
+    return '#' + hx(f(0)) + hx(f(8)) + hx(f(4));
+  }
+
+  /* Lives here rather than in the page, so it can only ever produce values the
+     schema actually knows about. */
+  C.randomState = function () {
+    var S = C.defaults();
+    S.name = 'DRAFT';
+    S.skin = pick(C.SKINS);
+    S.build = pick(C.BUILDS);
+    S.face = pick(C.FACES);
+    S.hairStyle = pick(C.HAIR_STYLES);
+    S.hair = pick(C.HAIRS);
+    S.beardStyle = pick(['none', 'none', 'full', 'goatee', 'stubble']);
+    S.beardColor = S.hair;
+    S.hat = pick(['none', 'none'].concat(C.HATS.slice(1)));
+    S.hatColor = hue();
+    S.brows = pick(C.BROWS);
+    S.browColor = Math.random() < 0.2 ? hue() : null;
+    S.eyeColor = Math.random() < 0.4 ? hue() : null;
+    C.MAKEUP_EDGES.forEach(function (e) {
+      S['makeup' + e.charAt(0).toUpperCase() + e.slice(1)] = Math.random() < 0.25;
+    });
+    S.makeupColor = hue();
+    S.makeupColor2 = Math.random() < 0.2 ? hue() : null;
+    S.glasses = pick(['none', 'none'].concat(C.GLASSES.slice(1)));
+    S.glassesColor = Math.random() < 0.25 ? hue() : null;
+    S.lensColor = Math.random() < 0.15 ? hue() : null;
+    S.shirt = hue();
+    S.pattern = pick(['none', 'none'].concat(C.PATTERNS.slice(1)));
+    S.patternColor = hue();
+    S.graphic = pick(['none', 'none'].concat(C.GRAPHICS.slice(1)));
+    S.graphicColor = hue();
+    S.sleeves = pick(['long', 'long', 'short']);
+    S.pants = hue();
+    S.shoes = '#181c24';
+    S.tie = Math.random() < 0.3 ? hue() : null;
+    S.lapels = Math.random() < 0.3 ? hue() : null;
+    S.belt = Math.random() < 0.3 ? '#141821' : null;
+    S.backText = null;
+    S.chain = Math.random() < 0.25;
+    S.badge = Math.random() < 0.2;
+    S.prop = pick(C.PROPS);
+    return S;
+  };
+
+  C.GROUPS = GROUPS;
+  C.LABELS = LABELS;
 
   function q(v) { return typeof v === 'string' ? "'" + v + "'" : String(v); }
 
@@ -1776,6 +1849,13 @@ window.PW = window.PW || {};
       brows: 'thick',
       shirt: '#565d6d', lapels: '#454b59', sleeves: 'long', badge: true,
       pants: '#454b59', shoes: '#181c24', prop: 'briefcase'
+    },
+    {
+      id: 'con-man', name: 'CON MAN',
+      skin: 'amber', build: 'normal', face: 'square', hair: 'blonde', hairStyle: 'swoop',
+      brows: 'thin', makeup: ['bottom', 'inner'], makeupColor: '#d2b8a7',
+      shirt: '#1a2d5b', sleeves: 'long', tie: '#b80000',
+      pants: '#1a2d5b', shoes: '#141821'
     },
     {
       id: 'casino', name: 'CASINO BOSS',

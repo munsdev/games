@@ -68,6 +68,10 @@ python3 -m http.server 8777      # then open the harnesses below
 - `test/sheet.html` renders every sprite at 5x for art review.
 - `test/autoplay.html` drives the real game with a bot, for watching gameplay
   states without playing.
+- `node test/run-consistency.js` checks the editor schema, the sprite renderer
+  and the roster against each other: every listed value renders, every field has
+  a label, every character survives a source round trip, and legacy fields still
+  resolve. Needs a static server running (see above).
 - `node tools/bundle.js [in.html] [out.html]` inlines the `../src/*.js` script
   tags of a page to produce a single self-contained file. Defaults to
   `tools/page.html` -> `dist/on-the-list.html`; pass `tools/editor.html

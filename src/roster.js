@@ -115,6 +115,13 @@
       pants: '#454b59', shoes: '#181c24', prop: 'briefcase'
     },
     {
+      id: 'con-man', name: 'CON MAN',
+      skin: 'amber', build: 'normal', face: 'square', hair: 'blonde', hairStyle: 'swoop',
+      brows: 'thin', makeup: ['bottom', 'inner'], makeupColor: '#d2b8a7',
+      shirt: '#1a2d5b', sleeves: 'long', tie: '#b80000',
+      pants: '#1a2d5b', shoes: '#141821'
+    },
+    {
       id: 'casino', name: 'CASINO BOSS',
       skin: 'peach', build: 'heavy', face: 'broad', hair: 'black', hairStyle: 'slick',
       brows: 'thick', glasses: 'roundShades',

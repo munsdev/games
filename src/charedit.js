@@ -182,6 +182,74 @@
     return S;
   };
 
+
+  /* Every key toDef can emit. The consistency test checks this against what
+     the sprite renderer actually reads. */
+  C.KEYS = ['id', 'name', 'skin', 'build', 'face', 'hair', 'hairStyle', 'beard',
+            'hat', 'hatColor', 'brows', 'browColor', 'eyeColor', 'makeup',
+            'makeupColor', 'makeupColor2', 'glasses', 'glassesColor', 'lensColor',
+            'shirt', 'sleeves', 'pattern', 'patternColor', 'graphic', 'graphicColor',
+            'tie', 'lapels', 'belt', 'backText', 'chain', 'badge', 'pants', 'shoes', 'prop'];
+
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  function hue() {
+    var h = Math.floor(Math.random() * 360);
+    var sat = (25 + Math.random() * 45) / 100;
+    var lum = (22 + Math.random() * 45) / 100;
+    var k = function (n) { return (n + h / 30) % 12; };
+    var a = sat * Math.min(lum, 1 - lum);
+    var f = function (n) { return lum - a * Math.max(-1, Math.min(Math.min(k(n) - 3, 9 - k(n)), 1)); };
+    var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
+    return '#' + hx(f(0)) + hx(f(8)) + hx(f(4));
+  }
+
+  /* Lives here rather than in the page, so it can only ever produce values the
+     schema actually knows about. */
+  C.randomState = function () {
+    var S = C.defaults();
+    S.name = 'DRAFT';
+    S.skin = pick(C.SKINS);
+    S.build = pick(C.BUILDS);
+    S.face = pick(C.FACES);
+    S.hairStyle = pick(C.HAIR_STYLES);
+    S.hair = pick(C.HAIRS);
+    S.beardStyle = pick(['none', 'none', 'full', 'goatee', 'stubble']);
+    S.beardColor = S.hair;
+    S.hat = pick(['none', 'none'].concat(C.HATS.slice(1)));
+    S.hatColor = hue();
+    S.brows = pick(C.BROWS);
+    S.browColor = Math.random() < 0.2 ? hue() : null;
+    S.eyeColor = Math.random() < 0.4 ? hue() : null;
+    C.MAKEUP_EDGES.forEach(function (e) {
+      S['makeup' + e.charAt(0).toUpperCase() + e.slice(1)] = Math.random() < 0.25;
+    });
+    S.makeupColor = hue();
+    S.makeupColor2 = Math.random() < 0.2 ? hue() : null;
+    S.glasses = pick(['none', 'none'].concat(C.GLASSES.slice(1)));
+    S.glassesColor = Math.random() < 0.25 ? hue() : null;
+    S.lensColor = Math.random() < 0.15 ? hue() : null;
+    S.shirt = hue();
+    S.pattern = pick(['none', 'none'].concat(C.PATTERNS.slice(1)));
+    S.patternColor = hue();
+    S.graphic = pick(['none', 'none'].concat(C.GRAPHICS.slice(1)));
+    S.graphicColor = hue();
+    S.sleeves = pick(['long', 'long', 'short']);
+    S.pants = hue();
+    S.shoes = '#181c24';
+    S.tie = Math.random() < 0.3 ? hue() : null;
+    S.lapels = Math.random() < 0.3 ? hue() : null;
+    S.belt = Math.random() < 0.3 ? '#141821' : null;
+    S.backText = null;
+    S.chain = Math.random() < 0.25;
+    S.badge = Math.random() < 0.2;
+    S.prop = pick(C.PROPS);
+    return S;
+  };
+
+  C.GROUPS = GROUPS;
+  C.LABELS = LABELS;
+
   function q(v) { return typeof v === 'string' ? "'" + v + "'" : String(v); }
 
   C.source = function (d) {

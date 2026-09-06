@@ -20,10 +20,12 @@ function band(title,items,facings){
   });
   y+=S*Z+26;
 }
-band('GLASSES  front / side', PW.CHAR.GLASSES.slice(1).map(function(g){
+band('GLASSES  front / side', PW.CHAR.GLASSES.slice(1,5).map(function(g){
   return {label:g,def:base({glasses:g})};}), ['front','side']);
-band('EYE RING  front / side', [
-  {l:'top',m:['top']},{l:'bottom',m:['bottom']},{l:'outer',m:['outer']},
-  {l:'inner',m:['inner']},{l:'tired',m:['top','bottom','outer','inner']}
-].map(function(x){return {label:x.l,def:base({makeup:x.m,makeupColor:'#6a4258'})};}), ['front','side']);
+band('MORE GLASSES + RING', [
+  {l:'roundShades',d:{glasses:'roundShades'}},
+  {l:'aviator',d:{glasses:'aviator'}},
+  {l:'round+dark frames',d:{glasses:'round',glassesColor:'#22262f'}},
+  {l:'tired',d:{makeup:['top','bottom','outer','inner'],makeupColor:'#5a3a48'}}
+].map(function(x){return {label:x.l,def:base(x.d)};}), ['front','side']);
 </script></body></html>

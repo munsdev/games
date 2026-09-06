@@ -213,6 +213,7 @@
   /* The eyes and the lenses share one geometry: each eye sits at the centre of
      a 3x4 cell, so a makeup ring and a spectacle frame occupy the same box. */
   var EYE_L = 9, EYE_R = 14, EYE_Y = 6;
+  var FRAME = '#8a93a6';   // frames must contrast with the eye they surround
 
   var LEGACY_MAKEUP = { shadow: ['top'], liner: ['bottom', 'outer'], full: ['top', 'bottom', 'outer'] };
 
@@ -267,7 +268,7 @@
   /* Front lenses are the 3x3 box around each eye, bridged across the nose. */
   function glasses(s, o, kind, frameColor, lensColor) {
     if (!kind) return;
-    var fr = frameColor || '#2b3140';
+    var fr = frameColor || FRAME;
     var tint = lensColor || '#181c24';
     var L = EYE_L - 1, R = EYE_R - 1, Y = EYE_Y - 1;
 
@@ -312,37 +313,35 @@
 
   /* In profile only the near lens shows, and it needs a temple arm running
      back to the ear or it reads as loose pixels on the cheek. */
+  /* In profile only the near lens shows, and it needs a temple arm running
+     back to the ear or it reads as loose pixels on the cheek. */
   function glassesSide(s, o, kind, frameColor, lensColor) {
     if (!kind) return;
-    var fr = frameColor || '#2b3140';
+    var fr = frameColor || FRAME;
     var tint = lensColor || '#181c24';
     var x = EYE_R - 1, Y = EYE_Y - 1;
+
+    s.det(o + 11, EYE_Y, 2, 1, fr);   // temple arm, back to the ear
 
     if (kind === 'round') {
       s.det(o + EYE_R, Y, 1, 1, fr); s.det(o + EYE_R, Y + 2, 1, 1, fr);
       s.det(o + x, EYE_Y, 1, 1, fr); s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'square') {
       s.det(o + x, Y, 3, 1, fr); s.det(o + x, Y + 2, 3, 1, fr);
       s.det(o + x, EYE_Y, 1, 1, fr); s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'halfRim') {
       s.det(o + x, Y, 3, 1, fr);
       s.det(o + x + 2, EYE_Y, 1, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     } else if (kind === 'shades') {
       s.det(o + x, Y, 3, 3, tint);
       s.det(o + x, Y - 1, 3, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     } else if (kind === 'roundShades') {
       s.det(o + x, EYE_Y, 3, 1, tint);
       s.det(o + EYE_R, Y, 1, 1, tint); s.det(o + EYE_R, Y + 2, 1, 1, tint);
-      s.det(o + 11, EYE_Y, 2, 1, fr);
     } else if (kind === 'aviator') {
       s.det(o + x, Y, 3, 2, tint);
       s.det(o + EYE_R, Y + 2, 1, 1, tint);
       s.det(o + x, Y - 1, 3, 1, fr);
-      s.det(o + 11, Y, 3, 1, fr);
     }
   }
 
@@ -563,8 +562,9 @@
     if (!tinted(specs)) {
       makeup(s, o, def);
       var iris = def.eyeColor || '#1f2430';
-      s.det(o + EYE_L, EYE_Y, 1, 2, iris);
-      s.det(o + EYE_R, EYE_Y, 1, 2, iris);
+      var eh = specs ? 1 : 2;
+      s.det(o + EYE_L, EYE_Y, 1, eh, iris);
+      s.det(o + EYE_R, EYE_Y, 1, eh, iris);
     }
     glasses(s, o, specs, def.glassesColor, def.lensColor);
     brows(s, o, def, hc, skin);
@@ -617,7 +617,7 @@
     var sspecs = specsOf(def);
     if (!tinted(sspecs)) {
       makeupSide(s, o, def);
-      s.det(o + EYE_R, EYE_Y, 1, 2, def.eyeColor || '#1f2430');
+      s.det(o + EYE_R, EYE_Y, 1, sspecs ? 1 : 2, def.eyeColor || '#1f2430');
     }
     glassesSide(s, o, sspecs, def.glassesColor, def.lensColor);
     if (def.brows && def.brows !== 'none') {

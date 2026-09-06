@@ -1,0 +1,106 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Consistency checks</title></head><body>
+<pre id="out" style="background:#0d1117;color:#d7dde8;font:12px monospace;padding:12px;margin:0"></pre>
+<script src="../src/palette.js"></script><script src="../src/sprites.js"></script>
+<script src="../src/charedit.js"></script><script src="../src/roster.js"></script>
+<script>
+/* Checks that the editor's schema, the sprite renderer and the roster all agree.
+   Run through test/run-consistency.js. */
+(function () {
+  var fails = 0, lines = [];
+  function ok(name) { lines.push('  ok   ' + name); }
+  function bad(name, detail) { fails += 1; lines.push('  FAIL ' + name + (detail ? '  -> ' + detail : '')); }
+  function check(name, cond, detail) { cond ? ok(name) : bad(name, detail); }
+  var C = PW.CHAR;
+
+  function bakes(def) {
+    try {
+      PW.bake(def, { cuffed: false });
+      PW.bake(def, { cuffed: true });
+      return null;
+    } catch (e) { return e.message; }
+  }
+
+  lines.push('\nevery listed value renders');
+  var LISTS = {
+    skin: C.SKINS, build: C.BUILDS, face: C.FACES, hairStyle: C.HAIR_STYLES,
+    hair: C.HAIRS, brows: C.BROWS, glasses: C.GLASSES, pattern: C.PATTERNS,
+    graphic: C.GRAPHICS, prop: C.PROPS, sleeves: C.SLEEVES
+  };
+  Object.keys(LISTS).forEach(function (field) {
+    var broken = LISTS[field].filter(function (v) {
+      var S = C.defaults();
+      S[field] = v;
+      if (field === 'pattern') S.patternColor = '#888888';
+      if (field === 'graphic') S.graphicColor = '#888888';
+      return bakes(C.toDef(S));
+    });
+    check(field + ' (' + LISTS[field].length + ' values)', broken.length === 0, broken.join(','));
+  });
+  var beardBroken = C.BEARDS.filter(function (v) {
+    var S = C.defaults(); S.beardStyle = v; return bakes(C.toDef(S));
+  });
+  check('beard (' + C.BEARDS.length + ' values)', beardBroken.length === 0, beardBroken.join(','));
+  var ringBroken = C.MAKEUP_EDGES.filter(function (e) {
+    var S = C.defaults();
+    S['makeup' + e.charAt(0).toUpperCase() + e.slice(1)] = true;
+    return bakes(C.toDef(S));
+  });
+  check('makeup edges (' + C.MAKEUP_EDGES.length + ')', ringBroken.length === 0, ringBroken.join(','));
+
+  lines.push('\nevery control is wired');
+  var missingLabel = [], notInKeys = [];
+  C.GROUPS.forEach(function (g) {
+    g[1].forEach(function (f) {
+      if (!C.LABELS[f.k]) missingLabel.push(f.k);
+    });
+  });
+  check('every field has a label', missingLabel.length === 0, missingLabel.join(','));
+  var defKeys = Object.keys(C.toDef(C.defaults()));
+  defKeys.concat(Object.keys(C.toDef(C.randomState()))).forEach(function (k) {
+    if (C.KEYS.indexOf(k) === -1 && notInKeys.indexOf(k) === -1) notInKeys.push(k);
+  });
+  check('emitted keys are all declared', notInKeys.length === 0, notInKeys.join(','));
+
+  lines.push('\nstate survives a round trip');
+  function stable(def, label) {
+    var once = C.toDef(C.fromDef(def));
+    var twice = C.toDef(C.fromDef(once));
+    if (JSON.stringify(once) !== JSON.stringify(twice)) { bad('idempotent: ' + label); return; }
+    var reparsed;
+    try { reparsed = C.parse(C.source(once)); }
+    catch (e) { bad('source parses: ' + label, e.message); return; }
+    var back = C.toDef(C.fromDef(reparsed));
+    if (JSON.stringify(once) !== JSON.stringify(back)) {
+      bad('source round trip: ' + label,
+        JSON.stringify(once) + ' vs ' + JSON.stringify(back));
+      return;
+    }
+    ok(label);
+  }
+  PW.PLAYERS.forEach(function (d) { stable(d, d.name); });
+  PW.EXECS.forEach(function (d) { stable(d, d.name); });
+  for (var i = 0; i < 40; i += 1) stable(C.toDef(C.randomState()), 'random #' + i);
+
+  lines.push('\nlegacy fields still resolve');
+  var legacy = { id: 'l', name: 'L', skin: 'tan', shirt: '#445', pants: '#223', shoes: '#111',
+                 eyes: 'round', pinstripe: '#667', makeup: 'full', makeupColor: '#888' };
+  var conv = C.toDef(C.fromDef(legacy));
+  check('eyes:round becomes glasses:round', conv.glasses === 'round', conv.glasses);
+  check('pinstripe becomes pattern:stripes', conv.pattern === 'stripes', conv.pattern);
+  check('makeup:full becomes an edge list',
+    Array.isArray(conv.makeup) && conv.makeup.length === 3, JSON.stringify(conv.makeup));
+  check('legacy def still renders', !bakes(legacy));
+
+  lines.push('\nroster');
+  check('ids are unique',
+    new Set(PW.EXECS.map(function (d) { return d.id; })).size === PW.EXECS.length);
+  check('every executive renders',
+    PW.EXECS.every(function (d) { return !bakes(d); }));
+  check('every player renders',
+    PW.PLAYERS.every(function (d) { return !bakes(d); }));
+
+  lines.push(fails === 0 ? '\nall consistency checks passed\n' : '\n' + fails + ' FAILED\n');
+  document.getElementById('out').textContent = lines.join('\n');
+  window.__fails = fails;
+})();
+</script></body></html>

@@ -208,6 +208,11 @@ kbd {
 
 .maker { display: flex; flex-direction: column; gap: 12px; }
 .makerGrid { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(260px, 320px); gap: 16px; align-items: start; }
+
+/* The preview sticks while the control list scrolls past it. */
+@media (min-width: 701px) {
+  .makerPreview { position: sticky; top: 12px; align-self: start; }
+}
 @media (max-width: 700px) { .makerGrid { grid-template-columns: 1fr; } }
 
 .facings { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -284,7 +289,7 @@ kbd {
     <p class="note">Build someone and they join the line-up on the title screen. Saved in
       this browser, so they are still there next time you play.</p>
     <div class="makerGrid">
-      <div>
+      <div class="makerPreview">
         <div class="facings" id="myFacings"></div>
         <div class="makerBar">
           <button type="button" class="btn primary" id="saveMine">Save to line-up</button>
