@@ -278,6 +278,9 @@
     ui.dust.draw(ctx);
     drawHud(ctx, g, ui.best, ui.pop);
 
+    /* Hosts that provide their own chrome (the CTA embed puts title, pause and
+       result in DOM overlays) switch the in-canvas panels off. */
+    if (ui.chrome === false) return;
     if (g.phase === 'ready') drawReady(ctx);
     else if (g.phase === 'dead') drawOver(ctx, g, ui.best, ui.fresh);
     else if (g.phase === 'docket') drawCleared(ctx, g);
