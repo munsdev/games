@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>On the List — roster harness</title>
+<style>body{margin:0;background:#1a1d24}.col{width:760px;height:600px}</style></head><body>
+<div class="col"><div class="games-script"><div class="w-embed">
+  <div data-on-the-list></div>
+  <script>
+    /* Exercises every roster operation at once. */
+    window.OTL_ROSTER = window.OTL_ROSTER || {
+      execs: [
+        { id: 'a', name: 'ALPHA', shirt: 'navy', skin: 'amber', hair: 'black' },
+        { id: 'b', name: 'BETA',  shirt: 'grey', skin: 'pale',  hair: 'brown' },
+        { id: 'c', name: 'GAMMA', shirt: 'wine', skin: 'olive', hair: 'blond' }
+      ],
+      addExecs: [ { name: 'Delta Man', shirt: 'teal' } ],
+      removeExecs: [ 'b', 'nope' ],
+      editExecs: { a: { name: 'ALPHA PRIME' }, ghost: { name: 'X' } },
+      addOfficers: [ { id: 'ranger', name: 'RANGER', shirt: 'forest' }, { name: '', shirt: 'x' } ],
+      removeOfficers: [ 'detective' ],
+      editOfficers: { officer: { name: 'SARGE' } }
+    };
+  </script>
+  <script src="../../dist/cta/on-the-list/loader.js"></script>
+</div></div></div>
+</body></html>
