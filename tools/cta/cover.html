@@ -1,0 +1,64 @@
+<!doctype html><html><head><meta charset="utf-8"><title>On the List — cover art</title>
+<style>body{margin:0;background:#111}canvas{image-rendering:pixelated;display:block}</style></head><body>
+<canvas id="c" width="1024" height="1024"></canvas>
+<script src="../../src/palette.js"></script><script src="../../src/font.js"></script>
+<script src="../../src/sprites.js"></script><script src="../../src/roster.js"></script>
+<script>
+/* Square cover for the Games collection, drawn from the game's own sprites and
+   5x7 font so it reads as the same object as the thing it links to. */
+var cv = document.getElementById('c'), x = cv.getContext('2d');
+x.imageSmoothingEnabled = false;
+PW.bakeAll();
+
+var W = 1024, CELL = 64;
+
+// Plaza ground, same checker and grit as the playfield.
+for (var r = 0; r < W / CELL; r += 1) {
+  for (var c = 0; c < W / CELL; c += 1) {
+    x.fillStyle = (r + c) % 2 === 0 ? PW.UI.lotA : PW.UI.lotB;
+    x.fillRect(c * CELL, r * CELL, CELL, CELL);
+  }
+}
+for (var i = 0; i < 9000; i += 1) {
+  x.fillStyle = PW.UI.grit[Math.random() < 0.5 ? 0 : 1];
+  x.fillRect(Math.floor(Math.random() * W), Math.floor(Math.random() * W), 2, 2);
+}
+
+// Darken toward the edges so the figures and type carry.
+var vig = x.createRadialGradient(W / 2, W * 0.52, W * 0.16, W / 2, W * 0.52, W * 0.72);
+vig.addColorStop(0, 'rgba(8,11,17,0.15)');
+vig.addColorStop(1, 'rgba(6,8,13,0.82)');
+x.fillStyle = vig;
+x.fillRect(0, 0, W, W);
+
+// The officer at the head of a short column, which is the whole game in one image.
+var Z = 8, S = PW.SPRITE * Z;
+var line = [
+  { art: PW.art.players[0], cuffed: false },
+  { art: PW.art.execs[3].cuffed, cuffed: true },
+  { art: PW.art.execs[6].cuffed, cuffed: true },
+  { art: PW.art.execs[9].cuffed, cuffed: true }
+];
+var step = Math.round(S * 0.74);              // overlap, so it reads as one line
+var startX = Math.round((W - ((line.length - 1) * step + S)) / 2);
+var figY = 545;
+for (var k = line.length - 1; k >= 0; k -= 1) {
+  var img = line[k].art.side;
+  x.save();
+  x.translate(startX + k * step + S, figY);
+  x.scale(-1, 1);                       // the column faces left, the way it walks
+  x.drawImage(img, 0, 0, S, S);
+  x.restore();
+}
+
+// Wordmark in the game's own font.
+var title = 'ON THE LIST';
+var ts = 13;
+PW.textCentered(x, title, W / 2, 300, PW.UI.accent, ts);
+var sub = 'AN ARCADE GAME';
+PW.textCentered(x, sub, W / 2, 420, PW.UI.textDim, 4);
+
+// Hairline under the column, the plaza edge.
+x.fillStyle = PW.UI.frameEdge;
+x.fillRect(120, figY + S + 26, W - 240, 4);
+</script></body></html>
